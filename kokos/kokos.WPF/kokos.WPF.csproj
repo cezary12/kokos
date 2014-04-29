@@ -64,6 +64,7 @@
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\NegateBooleanConverter.cs" />
     <Compile Include="Utils\DateTimeExtensions.cs" />
+    <Compile Include="ViewModel\Base\AsyncRelayCommand.cs" />
     <Compile Include="ViewModel\Base\AViewModel.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />

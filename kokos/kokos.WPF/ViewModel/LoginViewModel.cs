@@ -1,4 +1,6 @@
-﻿using kokos.WPF.ViewModel.Base;
+﻿using System.Threading.Tasks;
+using kokos.WPF.ViewModel.Base;
+using System.Threading;
 
 namespace kokos.WPF.ViewModel
 {
@@ -34,21 +36,29 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public RelayCommand LoginCommand { get; private set; }
+        public AsyncRelayCommand LoginCommand { get; private set; }
+        public AsyncRelayCommand LogoutCommand { get; private set; }
 
         public LoginViewModel()
         {
-            LoginCommand = new RelayCommand(ExecuteLogin, CanExecuteLogin);
+            LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync, param => !IsLoggedIn);
+            LogoutCommand = new AsyncRelayCommand(ExecuteLogoutAsync, param => IsLoggedIn);
         }
 
-        private bool CanExecuteLogin()
-        {
-            return true;
-        }
-
-        private void ExecuteLogin()
+        private async Task ExecuteLoginAsync(object parameter)
         {
             IsBusy = true;
+            await Task.Delay(2000);
+            IsBusy = false;
+            IsLoggedIn = true;
+        }
+
+        private async Task ExecuteLogoutAsync(object parameter)
+        {
+            IsLoggedIn = false;
+            IsBusy = true;
+            await Task.Delay(20);
+            IsBusy = false;
         }
     }
 }
