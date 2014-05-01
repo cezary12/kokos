@@ -1,12 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using kokos.WPF.Properties;
+using kokos.WPF.Security;
+using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
-using System.Threading;
+using System.Threading.Tasks;
 
 namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AViewModel
     {
-        public string LoginName
+        public string Login
         {
             get { return GetValue<string>(); }
             set { SetValue(value); }
@@ -39,16 +41,32 @@ namespace kokos.WPF.ViewModel
         public AsyncRelayCommand LoginCommand { get; private set; }
         public AsyncRelayCommand LogoutCommand { get; private set; }
 
+        private readonly SyncApiWrapper _syncWrapper = new SyncApiWrapper();
+
         public LoginViewModel()
         {
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync, param => !IsLoggedIn);
             LogoutCommand = new AsyncRelayCommand(ExecuteLogoutAsync, param => IsLoggedIn);
+
+            RememberLoginData = Settings.Default.RememberLoginData;
+            Login = Settings.Default.Login;
+            Password = Settings.Default.Password.Decrypt();
         }
 
         private async Task ExecuteLoginAsync(object parameter)
         {
             IsBusy = true;
-            await Task.Delay(2000);
+
+            await Task
+                .Run(() => _syncWrapper.Login(Login, Password))
+                .ContinueWith(x =>
+                {
+                    Settings.Default.RememberLoginData = RememberLoginData;
+                    Settings.Default.Login = RememberLoginData ? Login : "";
+                    Settings.Default.Password = RememberLoginData ? Password.Encrypt() : "";
+                    Settings.Default.Save();
+                });
+
             IsBusy = false;
             IsLoggedIn = true;
         }
@@ -57,7 +75,7 @@ namespace kokos.WPF.ViewModel
         {
             IsLoggedIn = false;
             IsBusy = true;
-            await Task.Delay(20);
+            await Task.Run(() => _syncWrapper.Logout());
             IsBusy = false;
         }
     }

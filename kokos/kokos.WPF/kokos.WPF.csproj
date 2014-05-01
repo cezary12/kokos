@@ -41,6 +41,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MahApps.Metro.0.14.0-ALPHA25\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
@@ -61,8 +62,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AttachedProperties\PasswordBoxAssistant.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\NegateBooleanConverter.cs" />
+    <Compile Include="Security\PasswordExtensions.cs" />
+    <Compile Include="ServerConnect\SyncApiWrapper.cs" />
     <Compile Include="Utils\DateTimeExtensions.cs" />
     <Compile Include="ViewModel\Base\AsyncRelayCommand.cs" />
     <Compile Include="ViewModel\Base\AViewModel.cs" />

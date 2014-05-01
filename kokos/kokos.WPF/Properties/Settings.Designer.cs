@@ -49,10 +49,10 @@ namespace kokos.WPF.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string RememberLoginData {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RememberLoginData {
             get {
-                return ((string)(this["RememberLoginData"]));
+                return ((bool)(this["RememberLoginData"]));
             }
             set {
                 this["RememberLoginData"] = value;

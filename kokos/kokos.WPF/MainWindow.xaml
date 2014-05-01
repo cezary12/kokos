@@ -3,6 +3,7 @@
                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                       xmlns:viewModel="clr-namespace:kokos.WPF.ViewModel"
                       xmlns:converters="clr-namespace:kokos.WPF.Converters"
+                      xmlns:attachedProperties="clr-namespace:kokos.WPF.AttachedProperties"
                       x:Class="kokos.WPF.MainWindow"
                       Title="kokos 0.1" Height="680" Width="800">
     <controls:MetroWindow.Resources>
@@ -19,14 +20,20 @@
     </controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Not}">
+            <Grid.InputBindings>
+                <KeyBinding Command="{Binding LoginViewModel.LoginCommand}" Key="Enter"/>
+            </Grid.InputBindings>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Width="200" IsEnabled="{Binding LoginViewModel.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
-                <TextBox Margin="0,5" controls:TextboxHelper.Watermark="Login"/>
-                <PasswordBox Margin="0,5" controls:TextboxHelper.Watermark="Password" />
-                <CheckBox Margin="0,5" Content="remember me"/>
+            <StackPanel Grid.Row="0" Width="200" IsEnabled="{Binding LoginViewModel.IsBusy, Converter={StaticResource NegateBooleanConverter}}"
+                        FocusManager.FocusedElement="{Binding ElementName=LoginBox}">
+                <TextBox Margin="0,5" controls:TextboxHelper.Watermark="Login" Text="{Binding LoginViewModel.Login}" Name="LoginBox" />
+                <PasswordBox Margin="0,5" controls:TextboxHelper.Watermark="Password" Name="PasswordBox"
+                             attachedProperties:PasswordBoxAssistant.BindPassword="true"
+                             attachedProperties:PasswordBoxAssistant.BoundPassword="{Binding Path=LoginViewModel.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <CheckBox Margin="0,5" Content="remember me" IsChecked="{Binding LoginViewModel.RememberLoginData}" />
                 <Button Margin="0,15" Style="{DynamicResource AccentedSquareButtonStyle}" Content="Login" Command="{Binding LoginViewModel.LoginCommand, Mode=OneWay}"/>
             </StackPanel>
             <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
@@ -34,6 +41,5 @@
         <Grid Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBlock>content goes here</TextBlock>
         </Grid>
-        
     </Grid>
 </controls:MetroWindow>
