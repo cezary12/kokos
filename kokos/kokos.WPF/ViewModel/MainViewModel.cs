@@ -6,15 +6,13 @@ namespace kokos.WPF.ViewModel
 {
     public class MainViewModel : AViewModel
     {
-        private readonly SyncApiWrapper _syncWrapper = new SyncApiWrapper();
-
         public LoginViewModel LoginViewModel { get; private set; }
 
         public ObservableCollection<SymbolViewModel> Symbols { get; private set; }
 
         public MainViewModel()
         {
-            LoginViewModel = new LoginViewModel(_syncWrapper, PopulateSymbols);
+            LoginViewModel = new LoginViewModel(PopulateSymbols);
             Symbols = new ObservableCollection<SymbolViewModel>();
         }
 
@@ -22,7 +20,7 @@ namespace kokos.WPF.ViewModel
         {
             Symbols.Clear();
 
-            foreach (var symbol in _syncWrapper.SymbolRecords)
+            foreach (var symbol in SyncApiWrapper.Instance.SymbolRecords)
             {
                 Symbols.Add(new SymbolViewModel { Name = symbol.Symbol, Bid = symbol.Bid, Ask = symbol.Ask });
             }

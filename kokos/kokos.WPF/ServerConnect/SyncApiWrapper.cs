@@ -11,32 +11,33 @@ namespace kokos.WPF.ServerConnect
     public class SyncApiWrapper
     {
         private static readonly Server Server = Servers.DEMO;
-        private readonly SyncAPIConnector _connector;
+        private static readonly SyncAPIConnector Connector = new SyncAPIConnector(Server);
 
         public List<SymbolRecord> SymbolRecords { get; private set; } 
 
-        public SyncApiWrapper()
+        public static readonly SyncApiWrapper Instance = new SyncApiWrapper();
+
+        private SyncApiWrapper()
         {
-            _connector = new SyncAPIConnector(Server);
         }
 
         public void Login(string userId, string password)
         {
             var credentials = new Credentials(userId, password, "", "kokos");
-            var loginResponse = APICommandFactory.ExecuteLoginCommand(_connector, credentials, true);
+            var loginResponse = APICommandFactory.ExecuteLoginCommand(Connector, credentials, true);
             ThrowIfNotSuccessful(loginResponse);
 
-            var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(_connector, true);
+            var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(Connector, true);
             ThrowIfNotSuccessful(allSymbolsResponse);
             SymbolRecords = new List<SymbolRecord>(allSymbolsResponse.SymbolRecords);
 
-            var symbolResponse = APICommandFactory.ExecuteSymbolCommand(_connector, "EURUSD", true);
+            var symbolResponse = APICommandFactory.ExecuteSymbolCommand(Connector, "EURUSD", true);
             ThrowIfNotSuccessful(symbolResponse);
         }
 
         public void Logout()
         {
-            var logoutResponse = APICommandFactory.ExecuteLogoutCommand(_connector);
+            var logoutResponse = APICommandFactory.ExecuteLogoutCommand(Connector);
             ThrowIfNotSuccessful(logoutResponse);
         }
 

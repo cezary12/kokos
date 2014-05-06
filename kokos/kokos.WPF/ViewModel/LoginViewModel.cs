@@ -9,8 +9,6 @@ namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AViewModel
     {
-        private readonly SyncApiWrapper _syncWrapper = new SyncApiWrapper();
-
         private readonly Action _executeOnLogging;
         public string Login
         {
@@ -45,10 +43,9 @@ namespace kokos.WPF.ViewModel
         public AsyncRelayCommand LoginCommand { get; private set; }
         public AsyncRelayCommand LogoutCommand { get; private set; }
 
-        public LoginViewModel(SyncApiWrapper syncWrapper, Action executeOnLogging)
+        public LoginViewModel(Action executeOnLogging)
         {
-            this._syncWrapper = syncWrapper;
-            this._executeOnLogging = executeOnLogging;
+            _executeOnLogging = executeOnLogging;
 
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync, param => !IsLoggedIn);
             LogoutCommand = new AsyncRelayCommand(ExecuteLogoutAsync, param => IsLoggedIn);
@@ -63,7 +60,7 @@ namespace kokos.WPF.ViewModel
             IsBusy = true;
 
             await Task
-                .Run(() => this._syncWrapper.Login(Login, Password))
+                .Run(() => SyncApiWrapper.Instance.Login(Login, Password))
                 .ContinueWith(x =>
                 {
                     Settings.Default.RememberLoginData = RememberLoginData;
@@ -82,7 +79,7 @@ namespace kokos.WPF.ViewModel
         {
             IsLoggedIn = false;
             IsBusy = true;
-            await Task.Run(() => this._syncWrapper.Logout());
+            await Task.Run(() => SyncApiWrapper.Instance.Logout());
             IsBusy = false;
         }
     }
