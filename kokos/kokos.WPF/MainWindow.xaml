@@ -39,7 +39,20 @@
             <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
         <Grid Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <TextBlock>content goes here</TextBlock>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" MinWidth="100" />
+                <ColumnDefinition Width="3"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"></GridSplitter>
+            <ListBox Grid.Column="0" ItemsSource="{Binding Symbols}"
+                      SelectedIndex="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
         </Grid>
     </Grid>
 </controls:MetroWindow>

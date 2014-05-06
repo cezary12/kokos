@@ -2,12 +2,16 @@
 using kokos.WPF.Security;
 using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
+using System;
 using System.Threading.Tasks;
 
 namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AViewModel
     {
+        private readonly SyncApiWrapper _syncWrapper = new SyncApiWrapper();
+
+        private readonly Action _executeOnLogging;
         public string Login
         {
             get { return GetValue<string>(); }
@@ -41,10 +45,11 @@ namespace kokos.WPF.ViewModel
         public AsyncRelayCommand LoginCommand { get; private set; }
         public AsyncRelayCommand LogoutCommand { get; private set; }
 
-        private readonly SyncApiWrapper _syncWrapper = new SyncApiWrapper();
-
-        public LoginViewModel()
+        public LoginViewModel(SyncApiWrapper syncWrapper, Action executeOnLogging)
         {
+            this._syncWrapper = syncWrapper;
+            this._executeOnLogging = executeOnLogging;
+
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync, param => !IsLoggedIn);
             LogoutCommand = new AsyncRelayCommand(ExecuteLogoutAsync, param => IsLoggedIn);
 
@@ -58,7 +63,7 @@ namespace kokos.WPF.ViewModel
             IsBusy = true;
 
             await Task
-                .Run(() => _syncWrapper.Login(Login, Password))
+                .Run(() => this._syncWrapper.Login(Login, Password))
                 .ContinueWith(x =>
                 {
                     Settings.Default.RememberLoginData = RememberLoginData;
@@ -66,6 +71,8 @@ namespace kokos.WPF.ViewModel
                     Settings.Default.Password = RememberLoginData ? Password.Encrypt() : "";
                     Settings.Default.Save();
                 });
+
+            _executeOnLogging();
 
             IsBusy = false;
             IsLoggedIn = true;
@@ -75,7 +82,7 @@ namespace kokos.WPF.ViewModel
         {
             IsLoggedIn = false;
             IsBusy = true;
-            await Task.Run(() => _syncWrapper.Logout());
+            await Task.Run(() => this._syncWrapper.Logout());
             IsBusy = false;
         }
     }
