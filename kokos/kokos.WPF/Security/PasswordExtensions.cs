@@ -35,7 +35,7 @@ namespace kokos.WPF.Security
             return Encoding.Unicode.GetString(decryptedData);
         }
 
-        private static SecureString ToSecureString(string input)
+        public static SecureString ToSecureString(this string input)
         {
             var secure = new SecureString();
             foreach (char c in input)
@@ -46,7 +46,7 @@ namespace kokos.WPF.Security
             return secure;
         }
 
-        private static string ToInsecureString(SecureString input)
+        public static string ToInsecureString(this SecureString input)
         {
             string returnValue;
             IntPtr ptr = System.Runtime.InteropServices.Marshal.SecureStringToBSTR(input);

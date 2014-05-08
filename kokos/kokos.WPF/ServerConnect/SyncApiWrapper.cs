@@ -1,4 +1,6 @@
-﻿using kokos.WPF.Utils;
+﻿using System.Security;
+using kokos.WPF.Security;
+using kokos.WPF.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +22,25 @@ namespace kokos.WPF.ServerConnect
 
         public static readonly SyncApiWrapper Instance = new SyncApiWrapper();
 
+        private string _userId;
+        private SecureString _password;
+
         private SyncApiWrapper()
         {
         }
 
-        public void Login(string userId, string password)
+        public void Login(string userId, SecureString password)
         {
-            var credentials = new Credentials(userId, password, "", "kokos");
+            var credentials = new Credentials(userId, password.ToInsecureString(), "", "kokos");
             var loginResponse = APICommandFactory.ExecuteLoginCommand(Connector, credentials, true);
             ThrowIfNotSuccessful(loginResponse);
 
             var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(Connector, true);
             ThrowIfNotSuccessful(allSymbolsResponse);
+
+            _userId = userId;
+            _password = password;
+
             SymbolRecords = new List<SymbolRecord>(allSymbolsResponse.SymbolRecords);
 
             var symbolResponse = APICommandFactory.ExecuteSymbolCommand(Connector, "EURUSD", true);

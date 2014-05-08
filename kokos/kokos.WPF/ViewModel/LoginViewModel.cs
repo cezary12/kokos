@@ -3,6 +3,7 @@ using kokos.WPF.Security;
 using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using System;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace kokos.WPF.ViewModel
@@ -16,9 +17,9 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public string Password
+        public SecureString Password
         {
-            get { return GetValue<string>(); }
+            get { return GetValue<SecureString>(); }
             set { SetValue(value); }
         }
 
@@ -57,7 +58,7 @@ namespace kokos.WPF.ViewModel
 
             RememberLoginData = Settings.Default.RememberLoginData;
             Login = Settings.Default.Login;
-            Password = Settings.Default.Password.Decrypt();
+            Password = Settings.Default.Password.Decrypt().ToSecureString();
         }
 
         private async Task ExecuteLoginAsync(object parameter)
@@ -70,7 +71,7 @@ namespace kokos.WPF.ViewModel
                 {
                     Settings.Default.RememberLoginData = RememberLoginData;
                     Settings.Default.Login = RememberLoginData ? Login : "";
-                    Settings.Default.Password = RememberLoginData ? Password.Encrypt() : "";
+                    Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
                     Settings.Default.Save();
                 });
 
