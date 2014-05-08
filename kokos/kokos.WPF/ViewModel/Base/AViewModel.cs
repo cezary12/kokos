@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace kokos.WPF.ViewModel.Base
 {
@@ -10,6 +11,17 @@ namespace kokos.WPF.ViewModel.Base
         public event PropertyChangedEventHandler PropertyChanged;
 
         private readonly Dictionary<string, object> _store = new Dictionary<string, object>();
+        protected bool IsInDesignMode
+        {
+            get
+            {
+                var propertyDescriptor = DependencyPropertyDescriptor.FromProperty(
+                        DesignerProperties.IsInDesignModeProperty,
+                        typeof(FrameworkElement));
+
+                return (bool)propertyDescriptor.Metadata.DefaultValue;
+            }
+        }
 
         protected T GetValue<T>([CallerMemberName] string propertyName = null)
         {

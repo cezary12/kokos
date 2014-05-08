@@ -45,6 +45,11 @@ namespace kokos.WPF.ViewModel
 
         public LoginViewModel(Action executeOnLogging)
         {
+            if (IsInDesignMode)
+            {
+                IsLoggedIn = true;
+            }
+
             _executeOnLogging = executeOnLogging;
 
             LoginCommand = new AsyncRelayCommand(ExecuteLoginAsync, param => !IsLoggedIn);

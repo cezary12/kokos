@@ -46,13 +46,31 @@
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"></GridSplitter>
             <ListBox Grid.Column="0" ItemsSource="{Binding Symbols}"
-                      SelectedIndex="0">
+                      SelectedIndex="0" SelectedItem="{Binding SelectedSymbol}" IsSynchronizedWithCurrentItem="True">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"></TextBlock>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Command="{Binding SelectedSymbol.LoadTickData}">Load data</Button>
+                    </Grid>
+                    
+                </Grid>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding SelectedSymbol.Ticks}" AutoGenerateColumns="True">
+                </DataGrid>
+            </Grid>
         </Grid>
     </Grid>
 </controls:MetroWindow>

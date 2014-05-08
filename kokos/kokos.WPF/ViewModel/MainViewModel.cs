@@ -10,6 +10,12 @@ namespace kokos.WPF.ViewModel
 
         public ObservableCollection<SymbolViewModel> Symbols { get; private set; }
 
+        public SymbolViewModel SelectedSymbol
+        {
+            get { return GetValue<SymbolViewModel>(); }
+            set { SetValue(value); }
+        }
+
         public MainViewModel()
         {
             LoginViewModel = new LoginViewModel(PopulateSymbols);
