@@ -37,7 +37,7 @@ namespace kokos.WPF.AttachedProperties
             // avoid recursive updating by ignoring the box's changed event
             passwordBox.PasswordChanged -= HandlePasswordChanged;
 
-            var newPasswordSecure = (SecureString)e.NewValue;
+            var newPasswordSecure = (SecureString) e.NewValue;
             var newPassword = newPasswordSecure.ToInsecureString();
 
             if (!GetUpdatingPassword(passwordBox))
@@ -62,8 +62,8 @@ namespace kokos.WPF.AttachedProperties
                 return;
             }
 
-            var wasBound = (bool)(e.OldValue);
-            var needToBind = (bool)(e.NewValue);
+            var wasBound = (bool) (e.OldValue);
+            var needToBind = (bool) (e.NewValue);
 
             if (wasBound)
             {
@@ -96,12 +96,12 @@ namespace kokos.WPF.AttachedProperties
 
         public static bool GetBindPassword(DependencyObject dp)
         {
-            return (bool)dp.GetValue(BindPassword);
+            return (bool) dp.GetValue(BindPassword);
         }
 
         public static SecureString GetBoundPassword(DependencyObject dp)
         {
-            return (SecureString)dp.GetValue(BoundPassword);
+            return (SecureString) dp.GetValue(BoundPassword);
         }
 
         public static void SetBoundPassword(DependencyObject dp, SecureString value)
@@ -111,7 +111,7 @@ namespace kokos.WPF.AttachedProperties
 
         private static bool GetUpdatingPassword(DependencyObject dp)
         {
-            return (bool)dp.GetValue(UpdatingPassword);
+            return (bool) dp.GetValue(UpdatingPassword);
         }
 
         private static void SetUpdatingPassword(DependencyObject dp, bool value)
