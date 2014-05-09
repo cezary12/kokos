@@ -16,7 +16,7 @@ namespace kokos.WPF.ServerConnect
     public class SyncApiWrapper
     {
         private static readonly Server Server = Servers.DEMO;
-        private static readonly SyncAPIConnector Connector = new SyncAPIConnector(Server);
+        private SyncAPIConnector _connector;
 
         public List<SymbolRecord> SymbolRecords { get; private set; } 
 
@@ -31,41 +31,78 @@ namespace kokos.WPF.ServerConnect
 
         public void Login(string userId, SecureString password)
         {
-            var credentials = new Credentials(userId, password.ToInsecureString(), "", "kokos");
-            var loginResponse = APICommandFactory.ExecuteLoginCommand(Connector, credentials, true);
-            ThrowIfNotSuccessful(loginResponse);
-
-            var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(Connector, true);
-            ThrowIfNotSuccessful(allSymbolsResponse);
-
             _userId = userId;
             _password = password;
 
+            var loginResponse = ConnectToServer();
+            ThrowIfNotSuccessful(loginResponse);
+
+            var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(_connector, true);
+            ThrowIfNotSuccessful(allSymbolsResponse);
+
             SymbolRecords = new List<SymbolRecord>(allSymbolsResponse.SymbolRecords);
 
-            var symbolResponse = APICommandFactory.ExecuteSymbolCommand(Connector, "EURUSD", true);
-            ThrowIfNotSuccessful(symbolResponse);
+            //var symbolResponse = APICommandFactory.ExecuteSymbolCommand(_connector, "EURUSD", true);
+            //ThrowIfNotSuccessful(symbolResponse);
+        }
+
+        private LoginResponse ConnectToServer()
+        {
+            _connector = new SyncAPIConnector(Server);
+            var credentials = new Credentials(_userId, _password.ToInsecureString(), "", "kokos");
+            var loginResponse = APICommandFactory.ExecuteLoginCommand(_connector, credentials, true);
+
+            return loginResponse;
         }
 
         public void Logout()
         {
-            var logoutResponse = APICommandFactory.ExecuteLogoutCommand(Connector);
+            var logoutResponse = APICommandFactory.ExecuteLogoutCommand(_connector);
             ThrowIfNotSuccessful(logoutResponse);
         }
 
         public List<TickData> LoadData(string symbol, PERIOD_CODE periodCode, DateTime? startDate = null, DateTime? endDate = null, long? ticks = null)
         {
-            var start = startDate == null ? (long?)null : startDate.Value.ToUnixMilliseconds();
-            var end = endDate == null ? (long?)null : endDate.Value.ToUnixMilliseconds();
+            return TryExecute(() =>
+            {
+                var start = startDate == null ? (long?) null : startDate.Value.ToUnixMilliseconds();
+                var end = endDate == null ? (long?) null : endDate.Value.ToUnixMilliseconds();
 
-            var chartRangeInfoRecord = new ChartRangeInfoRecord(symbol, periodCode, start, end, ticks);
-            var range = APICommandFactory.ExecuteChartRangeCommand(Connector, chartRangeInfoRecord, true);
-            
-            ThrowIfNotSuccessful(range);
+                var chartRangeInfoRecord = new ChartRangeInfoRecord(symbol, periodCode, start, end, ticks);
+                var range = APICommandFactory.ExecuteChartRangeCommand(_connector, chartRangeInfoRecord, true);
 
-            var tickData = range.RateInfos.Select(x => new TickData(x, range.Digits ?? 1)).ToList();
+                ThrowIfNotSuccessful(range);
 
-            return tickData;
+                var tickData = range.RateInfos.Select(x => new TickData(x, range.Digits ?? 1)).ToList();
+
+                return tickData;
+            });
+        }
+
+        private T TryExecute<T>(Func<T> execute, [CallerMemberName] string callerMemberName = null)
+        {
+            var retry = 0;
+            Exception lastException;
+            do
+            {
+                try
+                {
+                    return execute();
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+
+                    _connector.Dispose();
+                    _connector = new SyncAPIConnector(Server);
+
+                    var loginResponse = ConnectToServer();
+                    ThrowIfNotSuccessful(loginResponse);
+                }
+
+            } while (++retry <= 3);
+
+            throw new Exception("Unable to execute function " + callerMemberName, lastException);
         }
 
         private void ThrowIfNotSuccessful(BaseResponse response, [CallerMemberName] string callerMemberName = null)
