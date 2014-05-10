@@ -1,5 +1,6 @@
 ﻿using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
+using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -7,44 +8,53 @@ using xAPI.Codes;
 
 namespace kokos.WPF.ViewModel
 {
-    public class SymbolViewModel : AViewModel
+    public class SymbolViewModel : ReactiveObject
     {
+
+        private string _name;
         public string Name
         {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
+            get { return _name; }
+            set { this.RaiseAndSetIfChanged(ref _name, value); }
         }
 
+        private double? _bid;
         public double? Bid
         {
-            get { return GetValue<double?>(); }
-            set { SetValue(value); }
+            get { return _bid; }
+            set { this.RaiseAndSetIfChanged(ref _bid, value); }
         }
 
+
+        private double? _ask;
         public double? Ask
         {
-            get { return GetValue<double?>(); }
-            set { SetValue(value); }
+            get { return _ask; }
+            set { this.RaiseAndSetIfChanged(ref _ask, value); }
         }
 
+        private bool _isBusy;
         public bool IsBusy
         {
-            get { return GetValue<bool>(); }
-            set { SetValue(value); }
+            get { return _isBusy; }
+            set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
         }
 
         public ObservableCollection<TickData> Ticks { get; private set; } 
 
-        public AsyncRelayCommand LoadTickData { get; private set; }
+        public IReactiveCommand LoadTickData { get; private set; }
 
 
         public SymbolViewModel()
         {
+            if (this.IsInDesignMode())
+                IsBusy = true;
+
             Ticks = new ObservableCollection<TickData>();
-            LoadTickData = new AsyncRelayCommand(ExecuteLoadTickDataAsync, x => !IsBusy);
+            LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value), ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
         }
 
-        private async Task ExecuteLoadTickDataAsync(object parameter)
+        private async Task<bool> ExecuteLoadTickDataAsync(object parameter)
         {
             IsBusy = true;
 
@@ -64,6 +74,8 @@ namespace kokos.WPF.ViewModel
                 Ticks.Add(tick);
 
             IsBusy = false;
+
+            return true;
         }
     }
 }

@@ -53,7 +53,7 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Grid Grid.Column="2">
+            <Grid Grid.Column="2"  IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -66,10 +66,15 @@
                         </Grid.ColumnDefinitions>
                         <Button Command="{Binding SelectedSymbol.LoadTickData}">Load data</Button>
                     </Grid>
-                    
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding SelectedSymbol.Ticks}" AutoGenerateColumns="True">
+                <DataGrid Grid.Row="1" ItemsSource="{Binding SelectedSymbol.Ticks}" AutoGenerateColumns="True" IsReadOnly="True">
                 </DataGrid>
+            </Grid>
+            <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <controls:MetroProgressBar Grid.Row="0" IsIndeterminate="True" HorizontalAlignment="Stretch"/>
             </Grid>
         </Grid>
     </Grid>
