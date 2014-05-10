@@ -4,6 +4,7 @@
                       xmlns:viewModel="clr-namespace:kokos.WPF.ViewModel"
                       xmlns:converters="clr-namespace:kokos.WPF.Converters"
                       xmlns:attachedProperties="clr-namespace:kokos.WPF.AttachedProperties"
+                      xmlns:oxy="http://oxyplot.codeplex.com"
                       x:Class="kokos.WPF.MainWindow"
                       Title="kokos 0.1" Height="680" Width="800">
     <controls:MetroWindow.Resources>
@@ -69,15 +70,18 @@
                 </Grid>
                 <TabControl Grid.Row="1">
                     <TabItem Header="chart">
+                        <oxy:Plot Model="{Binding SelectedSymbol.Plot}"
+                                  Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                     </TabItem>
                     <TabItem Header="table">
                         <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
-                                   VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                   VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
+                                   Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" MinWidth="120"/>
-                                <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
-                                <controls:DataGridNumericUpDownColumn Header="High" Binding="{Binding High, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
-                                <controls:DataGridNumericUpDownColumn Header="Low" Binding="{Binding Low, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
+                                <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                <controls:DataGridNumericUpDownColumn Header="High" Binding="{Binding High, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                <controls:DataGridNumericUpDownColumn Header="Low" Binding="{Binding Low, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
                                 <controls:DataGridNumericUpDownColumn Header="Close" Binding="{Binding Close, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
                             </DataGrid.Columns>
                         </DataGrid>
