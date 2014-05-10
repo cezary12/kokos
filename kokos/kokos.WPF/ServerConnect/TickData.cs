@@ -6,16 +6,14 @@ namespace kokos.WPF.ServerConnect
 {
     public class TickData
     {
-        public double? Open { get; set; }
+        private long _digits;
 
-        public double? High { get; set; }
-        public double? Low { get; set; }
-
-        public double? Close { get; set; }
-
-        public double? Vol { get; set; }
-        
-        public long? Ctm { get; set; }
+        public double? Open { get; private set; }
+        public double? High { get; private set; }
+        public double? Low { get; private set; }
+        public double? Close { get; private set; }
+        public double? Vol { get; private set; }
+        public long? Ctm { get; private set; }
         
         public DateTime? Time
         {
@@ -37,6 +35,8 @@ namespace kokos.WPF.ServerConnect
             Close = (rateInfoRecord.Open + rateInfoRecord.Close)/mult;
             Vol = rateInfoRecord.Vol;
             Ctm = rateInfoRecord.Ctm;
+
+            _digits = digits;
         }
     }
 }

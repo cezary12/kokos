@@ -67,8 +67,22 @@
                         <Button Command="{Binding SelectedSymbol.LoadTickData}">Load data</Button>
                     </Grid>
                 </Grid>
-                <DataGrid Grid.Row="1" ItemsSource="{Binding SelectedSymbol.Ticks}" AutoGenerateColumns="True" IsReadOnly="True">
-                </DataGrid>
+                <TabControl Grid.Row="1">
+                    <TabItem Header="chart">
+                    </TabItem>
+                    <TabItem Header="table">
+                        <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
+                                   VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" MinWidth="120"/>
+                                <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
+                                <controls:DataGridNumericUpDownColumn Header="High" Binding="{Binding High, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
+                                <controls:DataGridNumericUpDownColumn Header="Low" Binding="{Binding Low, Mode=OneTime}" StringFormat="N4" MinWidth="110" />
+                                <controls:DataGridNumericUpDownColumn Header="Close" Binding="{Binding Close, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                </TabControl>
             </Grid>
             <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid.RowDefinitions>

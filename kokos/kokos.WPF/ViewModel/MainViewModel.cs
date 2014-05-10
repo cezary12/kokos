@@ -1,4 +1,5 @@
-﻿using kokos.WPF.ServerConnect;
+﻿using System.Linq;
+using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using System.Collections.ObjectModel;
 
@@ -30,6 +31,8 @@ namespace kokos.WPF.ViewModel
             {
                 Symbols.Add(new SymbolViewModel { Name = symbol.Symbol, Bid = symbol.Bid, Ask = symbol.Ask });
             }
+
+            SelectedSymbol = Symbols.FirstOrDefault();
         }
     }
 }
