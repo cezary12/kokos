@@ -112,7 +112,7 @@
     <Compile Include="ServerConnect\TickData.cs" />
     <Compile Include="Utils\DateTimeExtensions.cs" />
     <Compile Include="ViewModel\Base\AsyncRelayCommand.cs" />
-    <Compile Include="ViewModel\Base\AViewModel.cs" />
+    <Compile Include="ViewModel\Base\AReactiveViewModel.cs" />
     <Compile Include="ViewModel\Base\RelayCommand.cs" />
     <Compile Include="ViewModel\Base\Utils.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />

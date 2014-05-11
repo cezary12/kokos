@@ -10,6 +10,30 @@
     <controls:MetroWindow.Resources>
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!--Link Button-->
+        <SolidColorBrush x:Key="LinkButtonForeground" Color="#1297FB"/>
+        <SolidColorBrush x:Key="LinkButtonForegroundHighlighted" Color="#55AAFF"/>
+        <Style x:Key="LinkButton"
+           TargetType="Button">
+            <Setter Property="Cursor"
+                Value="Hand" />
+            <Setter Property="Foreground"
+                Value="{StaticResource LinkButtonForeground}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock><ContentPresenter /></TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver"
+                     Value="true">
+                    <Setter Property="Foreground"
+                        Value="{StaticResource LinkButtonForegroundHighlighted}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.DataContext>
         <viewModel:MainViewModel/>
@@ -59,24 +83,31 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button Command="{Binding SelectedSymbol.LoadTickData}">Load data</Button>
-                    </Grid>
-                </Grid>
                 <TabControl Grid.Row="1">
                     <TabItem Header="chart">
-                        <oxy:Plot Model="{Binding SelectedSymbol.Plot}"
-                                  Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Orientation="Horizontal" Margin="0,5">
+                                <Button Style="{StaticResource LinkButton}" Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d"/>
+                                <Button Style="{StaticResource LinkButton}" Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w"/>
+                                <Button Style="{StaticResource LinkButton}" Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m"/>
+                                <Button Style="{StaticResource LinkButton}" Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m"/>
+                                <Button Style="{StaticResource LinkButton}" Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m"/>
+                                <Button Style="{StaticResource LinkButton}" Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y"/>
+                            </StackPanel>
+                            <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}"
+                                      Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
+                        </Grid>
                     </TabItem>
                     <TabItem Header="table">
                         <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
                                    VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
-                                   Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                   Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" MinWidth="120"/>
                                 <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>

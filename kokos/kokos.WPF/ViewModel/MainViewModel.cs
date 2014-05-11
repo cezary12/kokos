@@ -1,11 +1,14 @@
-﻿using System.Linq;
+﻿using System;
+using System.Reactive.Linq;
 using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
+using ReactiveUI;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace kokos.WPF.ViewModel
 {
-    public class MainViewModel : AViewModel
+    public class MainViewModel : AReactiveViewModel
     {
         public LoginViewModel LoginViewModel { get; private set; }
 
@@ -21,6 +24,10 @@ namespace kokos.WPF.ViewModel
         {
             LoginViewModel = new LoginViewModel(PopulateSymbols);
             Symbols = new ObservableCollection<SymbolViewModel>();
+
+            this.ObservableForProperty(x => x.SelectedSymbol)
+                .Throttle(TimeSpan.FromMilliseconds(200))
+                .InvokeCommand(this, x => x.SelectedSymbol.LoadTickData);
         }
 
         private void PopulateSymbols()
@@ -29,7 +36,7 @@ namespace kokos.WPF.ViewModel
 
             foreach (var symbol in SyncApiWrapper.Instance.SymbolRecords)
             {
-                Symbols.Add(new SymbolViewModel { Name = symbol.Symbol, Bid = symbol.Bid, Ask = symbol.Ask });
+                Symbols.Add(new SymbolViewModel {Name = symbol.Symbol, Bid = symbol.Bid, Ask = symbol.Ask});
             }
 
             SelectedSymbol = Symbols.FirstOrDefault();

@@ -67,37 +67,74 @@ namespace kokos.WPF.ViewModel
                 IsBusy = true;
 
             Ticks = new ObservableCollection<TickData>();
-            LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value), ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
-            Plot = CreateCandleStickSeries();
+            LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
+                    ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
+
+            Plot = CreateCandleStickSeries("3m");
         }
 
         private async Task<bool> ExecuteLoadTickDataAsync(object parameter)
         {
             IsBusy = true;
 
-            var period = PERIOD_CODE.PERIOD_D1;
+            var duration = parameter as string;
 
-            var endDate = DateTime.Now;
+            PERIOD_CODE periodCode;
+            DateTime startDate, endDate;
 
-            var startDate = endDate.AddMonths(-3);
-            startDate = new DateTime(startDate.Year, startDate.Month, 1);
+            GetTickDataInfo(ref duration, out startDate, out endDate, out periodCode);
 
             var tickCount = 1000000;
 
-            var ticks = await Task.Run(() => SyncApiWrapper.Instance.LoadData(Name, period, startDate, endDate, tickCount));
+            var ticks = await Task.Run(() => SyncApiWrapper.Instance.LoadData(Name, periodCode, startDate, endDate, tickCount));
 
             Ticks.Clear();
             foreach (var tick in ticks)
                 Ticks.Add(tick);
 
-            Plot = CreateCandleStickSeries();
+            Plot = CreateCandleStickSeries(duration);
             IsBusy = false;
             IsLoaded = true;
 
             return true;
         }
 
-        private PlotModel CreateCandleStickSeries()
+        private static void GetTickDataInfo(ref string duration, out DateTime startDate, out DateTime endDate,
+            out PERIOD_CODE periodCode)
+        {
+            if (string.IsNullOrEmpty(duration))
+                duration = "3m";
+
+            periodCode = PERIOD_CODE.PERIOD_D1;
+
+            if (duration == "1d")
+                periodCode = PERIOD_CODE.PERIOD_M5;
+            else if (duration == "1w")
+                periodCode = PERIOD_CODE.PERIOD_H1;
+            else if (duration == "5y")
+                periodCode = PERIOD_CODE.PERIOD_W1;
+
+            endDate = DateTime.Now;
+
+            if (duration == "5y")
+                startDate = endDate.AddYears(-5);
+            else if (duration == "12m")
+                startDate = endDate.AddMonths(-12);
+            else if (duration == "6m")
+                startDate = endDate.AddMonths(-6);
+            else if (duration == "3m")
+                startDate = endDate.AddMonths(-3);
+            else if (duration == "1m")
+                startDate = endDate.AddMonths(-1);
+            else if (duration == "1w")
+                startDate = endDate.AddDays(-7);
+            else
+                startDate = endDate.AddDays(-1);
+
+            startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day);
+        }
+
+        private PlotModel CreateCandleStickSeries(string duration)
         {
             var pm = new PlotModel { Title = Name, LegendSymbolLength = 24 };
 
@@ -108,7 +145,7 @@ namespace kokos.WPF.ViewModel
             var candleStickSeries = new CandleStickSeries
             {
                 //CandleWidth = 6,
-                Title = Name,
+                Title = Name + " " + duration,
                 Color = OxyColor.FromRgb(57, 58, 59), //black
                 IncreasingFill = OxyColor.FromRgb(17, 178, 64), //green
                 DecreasingFill = OxyColor.FromRgb(178, 36, 35), //red
