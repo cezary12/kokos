@@ -154,3 +154,17 @@ $RECYCLE.BIN/
 
 # Mac desktop service store files
 .DS_Store
+/kokos/packages/OxyPlot.Core.2014.1.299.1/lib/portable-net4+sl4+wp71+win8/OxyPlot.dll
+/kokos/packages/OxyPlot.Core.2014.1.299.1/lib/portable-net4+sl4+wp71+win8/OxyPlot.xml
+/kokos/packages/OxyPlot.Core.2014.1.299.1/LICENSE
+/kokos/packages/OxyPlot.Core.2014.1.299.1/OxyPlot.Core.2014.1.299.1.nupkg
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET40/OxyPlot.Wpf.dll
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET40/OxyPlot.Wpf.XML
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET40/OxyPlot.Xps.dll
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET40/OxyPlot.Xps.XML
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET45/OxyPlot.Wpf.dll
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET45/OxyPlot.Wpf.XML
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET45/OxyPlot.Xps.dll
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/lib/NET45/OxyPlot.Xps.XML
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/LICENSE
+/kokos/packages/OxyPlot.Wpf.2014.1.299.1/OxyPlot.Wpf.2014.1.299.1.nupkg
