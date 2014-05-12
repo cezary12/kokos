@@ -98,7 +98,7 @@
                                 <Button Style="{StaticResource LinkButton}" Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m"/>
                                 <Button Style="{StaticResource LinkButton}" Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y"/>
                             </StackPanel>
-                            <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}"
+                            <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
                         </Grid>

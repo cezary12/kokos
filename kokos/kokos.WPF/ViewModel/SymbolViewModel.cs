@@ -57,6 +57,13 @@ namespace kokos.WPF.ViewModel
             set { this.RaiseAndSetIfChanged(ref _plot, value); }
         }
 
+        private IPlotController _plotController;
+        public IPlotController PlotController
+        {
+            get { return _plotController; }
+            set { this.RaiseAndSetIfChanged(ref _plotController, value); }
+        }
+
         public ObservableCollection<TickData> Ticks { get; private set; } 
 
         public IReactiveCommand LoadTickData { get; private set; }
@@ -70,7 +77,7 @@ namespace kokos.WPF.ViewModel
             LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
 
-            Plot = CreateCandleStickSeries("3m");
+            UpdatePlot("3m");
         }
 
         private async Task<bool> ExecuteLoadTickDataAsync(object parameter)
@@ -92,7 +99,7 @@ namespace kokos.WPF.ViewModel
             foreach (var tick in ticks)
                 Ticks.Add(tick);
 
-            Plot = CreateCandleStickSeries(duration);
+            UpdatePlot(duration);
             IsBusy = false;
             IsLoaded = true;
 
@@ -134,21 +141,53 @@ namespace kokos.WPF.ViewModel
             startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day);
         }
 
-        private PlotModel CreateCandleStickSeries(string duration)
+        private void UpdatePlot(string duration)
         {
-            var pm = new PlotModel { Title = Name, LegendSymbolLength = 24 };
+            var plotModel = new PlotModel { Title = Name, LegendSymbolLength = 24 };
 
-            var timeSpanAxis1 = new DateTimeAxis { Position = AxisPosition.Bottom, StringFormat = "MM/dd/yyyy" };
-            pm.Axes.Add(timeSpanAxis1);
-            var linearAxis1 = new LinearAxis { Position = AxisPosition.Left, StringFormat = "N4"};
-            pm.Axes.Add(linearAxis1);
+            var c = OxyColors.DarkBlue;
+            var timeSpanAxis1 = new DateTimeAxis
+            {
+                Position = AxisPosition.Bottom,
+                StringFormat = "MM/dd/yyyy",
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Solid,
+                MajorGridlineColor = OxyColor.FromAColor(40, c),
+                MinorGridlineColor = OxyColor.FromAColor(20, c)
+            };
+            plotModel.Axes.Add(timeSpanAxis1);
+
+            var linearAxis1 = new LinearAxis
+            {
+                Position = AxisPosition.Left,
+                StringFormat = "N4",
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Solid,
+                MajorGridlineColor = OxyColor.FromAColor(40, c),
+                MinorGridlineColor = OxyColor.FromAColor(20, c)
+            };
+            plotModel.Axes.Add(linearAxis1);
+
+            var lime = OxyColor.FromUInt32(0xCCA4C400);
+            var amber = OxyColor.FromUInt32(0xCCF0A30A);
+
+            var green = OxyColor.FromUInt32(0xCC60A917);
+            var orange = OxyColor.FromUInt32(0xCCFA6800);
+
+            var increasingFill = green;
+            var decreasingFill = orange;
+
             var candleStickSeries = new CandleStickSeries
             {
                 //CandleWidth = 6,
                 Title = Name + " " + duration,
                 Color = OxyColor.FromRgb(57, 58, 59), //black
-                IncreasingFill = OxyColor.FromRgb(17, 178, 64), //green
-                DecreasingFill = OxyColor.FromRgb(178, 36, 35), //red
+                IncreasingFill = increasingFill,
+                DecreasingFill = decreasingFill,
                 DataFieldX = "Time",
                 DataFieldHigh = "High",
                 DataFieldLow = "Low",
@@ -157,8 +196,16 @@ namespace kokos.WPF.ViewModel
                 TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
                 ItemsSource = (Ticks ?? new ObservableCollection<TickData>())
             };
-            pm.Series.Add(candleStickSeries);
-            return pm;
+            plotModel.Series.Add(candleStickSeries);
+
+            // create a new plot controller with default bindings
+            var plotController = new PlotController();
+
+            // add a tracker command to the mouse enter event
+            plotController.BindMouseEnter(PlotCommands.HoverPointsOnlyTrack);
+
+            Plot = plotModel;
+            PlotController = plotController;
         }
     }
 }
