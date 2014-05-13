@@ -89,6 +89,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal" Margin="0,5">
                                 <Button Style="{StaticResource LinkButton}" Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d"/>
@@ -101,7 +102,9 @@
                             <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                        </Grid>
+                            <oxy:Plot Grid.Row="2" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
+                                      Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>                        </Grid>
                     </TabItem>
                     <TabItem Header="table">
                         <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"

@@ -1,4 +1,7 @@
-﻿using kokos.WPF.ServerConnect;
+﻿using System.Collections.Generic;
+using System.Linq;
+using kokos.WPF.Analysis;
+using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -64,6 +67,20 @@ namespace kokos.WPF.ViewModel
             set { this.RaiseAndSetIfChanged(ref _plotController, value); }
         }
 
+        private PlotModel _plotAnalysis;
+        public PlotModel PlotAnalysis
+        {
+            get { return _plotAnalysis; }
+            set { this.RaiseAndSetIfChanged(ref _plotAnalysis, value); }
+        }
+
+        private IPlotController _plotAnalysisController;
+        public IPlotController PlotAnalysisController
+        {
+            get { return _plotAnalysisController; }
+            set { this.RaiseAndSetIfChanged(ref _plotAnalysisController, value); }
+        }
+
         public ObservableCollection<TickData> Ticks { get; private set; } 
 
         public IReactiveCommand LoadTickData { get; private set; }
@@ -76,6 +93,9 @@ namespace kokos.WPF.ViewModel
             Ticks = new ObservableCollection<TickData>();
             LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
+
+            PlotController = CreatePlotController();
+            PlotAnalysisController = CreatePlotController();
 
             UpdatePlot("3m");
         }
@@ -118,8 +138,8 @@ namespace kokos.WPF.ViewModel
                 periodCode = PERIOD_CODE.PERIOD_M5;
             else if (duration == "1w")
                 periodCode = PERIOD_CODE.PERIOD_H1;
-            else if (duration == "5y")
-                periodCode = PERIOD_CODE.PERIOD_W1;
+            //else if (duration == "5y")
+            //    periodCode = PERIOD_CODE.PERIOD_W1;
 
             endDate = DateTime.Now;
 
@@ -143,34 +163,7 @@ namespace kokos.WPF.ViewModel
 
         private void UpdatePlot(string duration)
         {
-            var plotModel = new PlotModel { Title = Name, LegendSymbolLength = 24 };
-
-            var c = OxyColors.DarkBlue;
-            var timeSpanAxis1 = new DateTimeAxis
-            {
-                Position = AxisPosition.Bottom,
-                StringFormat = "MM/dd/yyyy",
-                IsPanEnabled = false,
-                IsZoomEnabled = false,
-                MajorGridlineStyle = LineStyle.Solid,
-                MinorGridlineStyle = LineStyle.Solid,
-                MajorGridlineColor = OxyColor.FromAColor(40, c),
-                MinorGridlineColor = OxyColor.FromAColor(20, c)
-            };
-            plotModel.Axes.Add(timeSpanAxis1);
-
-            var linearAxis1 = new LinearAxis
-            {
-                Position = AxisPosition.Left,
-                StringFormat = "N4",
-                IsPanEnabled = false,
-                IsZoomEnabled = false,
-                MajorGridlineStyle = LineStyle.Solid,
-                MinorGridlineStyle = LineStyle.Solid,
-                MajorGridlineColor = OxyColor.FromAColor(40, c),
-                MinorGridlineColor = OxyColor.FromAColor(20, c)
-            };
-            plotModel.Axes.Add(linearAxis1);
+            var plotModel = CreatePlotModel(Name);
 
             var lime = OxyColor.FromUInt32(0xCCA4C400);
             var amber = OxyColor.FromUInt32(0xCCF0A30A);
@@ -196,16 +189,81 @@ namespace kokos.WPF.ViewModel
                 TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
                 ItemsSource = (Ticks ?? new ObservableCollection<TickData>())
             };
+
             plotModel.Series.Add(candleStickSeries);
 
+            Plot = plotModel;
+
+            var analysisPlotModel = CreatePlotModel("Moving Average");
+
+            var dateValues = Ticks.ToDateValuePoints(x => x.Close).ToList();
+
+            analysisPlotModel.Series.Add(CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues));
+
+            var mov10 = BasicAnalysis.CalculateMovingAverage(dateValues, 10);
+            var mov100 = BasicAnalysis.CalculateMovingAverage(dateValues, 100);
+
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), mov10));
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), mov100));
+
+            PlotAnalysis = analysisPlotModel;
+        }
+
+        private LineSeries CreateLineSeries(string title, OxyColor color, IEnumerable<DateValue> dateValues)
+        {
+            var lineSeries = new LineSeries { Title = title, Color = color };
+
+            var dataPoints = dateValues.ToDataPoints();
+
+            lineSeries.Points.AddRange(dataPoints);
+
+            return lineSeries;
+        }
+
+        private static PlotModel CreatePlotModel(string title)
+        {
+            var plotModel = new PlotModel { Title = title, LegendSymbolLength = 24 };
+
+            var darkBlue = OxyColors.DarkBlue;
+
+            var timeSpanAxis1 = new DateTimeAxis
+            {
+                Position = AxisPosition.Bottom,
+                StringFormat = "MM/dd/yyyy",
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Solid,
+                MajorGridlineColor = OxyColor.FromAColor(40, darkBlue),
+                MinorGridlineColor = OxyColor.FromAColor(20, darkBlue)
+            };
+            plotModel.Axes.Add(timeSpanAxis1);
+
+            var linearAxis1 = new LinearAxis
+            {
+                Position = AxisPosition.Left,
+                StringFormat = "N4",
+                IsPanEnabled = false,
+                IsZoomEnabled = false,
+                MajorGridlineStyle = LineStyle.Solid,
+                MinorGridlineStyle = LineStyle.Solid,
+                MajorGridlineColor = OxyColor.FromAColor(40, darkBlue),
+                MinorGridlineColor = OxyColor.FromAColor(20, darkBlue)
+            };
+            plotModel.Axes.Add(linearAxis1);
+
+            return plotModel;
+        }
+
+        private static PlotController CreatePlotController()
+        {
             // create a new plot controller with default bindings
             var plotController = new PlotController();
 
             // add a tracker command to the mouse enter event
             plotController.BindMouseEnter(PlotCommands.HoverPointsOnlyTrack);
 
-            Plot = plotModel;
-            PlotController = plotController;
+            return plotController;
         }
     }
 }
