@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using kokos.WPF.Analysis;
+﻿using kokos.WPF.Analysis;
 using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using OxyPlot;
@@ -8,77 +6,69 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 using ReactiveUI;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using xAPI.Codes;
 
 namespace kokos.WPF.ViewModel
 {
-    public class SymbolViewModel : ReactiveObject
+    public class SymbolViewModel : AReactiveViewModel
     {
-
-        private string _name;
         public string Name
         {
-            get { return _name; }
-            set { this.RaiseAndSetIfChanged(ref _name, value); }
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
         }
 
-        private double? _bid;
         public double? Bid
         {
-            get { return _bid; }
-            set { this.RaiseAndSetIfChanged(ref _bid, value); }
+            get { return GetValue<double?>(); }
+            set { SetValue(value); }
         }
 
 
-        private double? _ask;
         public double? Ask
         {
-            get { return _ask; }
-            set { this.RaiseAndSetIfChanged(ref _ask, value); }
+            get { return GetValue<double?>(); }
+            set { SetValue(value); }
         }
 
-        private bool _isBusy;
         public bool IsBusy
         {
-            get { return _isBusy; }
-            set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
 
-        private bool _isLoaded;
         public bool IsLoaded
         {
-            get { return _isLoaded; }
-            set { this.RaiseAndSetIfChanged(ref _isLoaded, value); }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
 
-        private PlotModel _plot;
         public PlotModel Plot
         {
-            get { return _plot; }
-            set { this.RaiseAndSetIfChanged(ref _plot, value); }
+            get { return GetValue<PlotModel>(); }
+            set { SetValue(value); }
         }
 
-        private IPlotController _plotController;
         public IPlotController PlotController
         {
-            get { return _plotController; }
-            set { this.RaiseAndSetIfChanged(ref _plotController, value); }
+            get { return GetValue<IPlotController>(); }
+            set { SetValue(value); }
         }
 
-        private PlotModel _plotAnalysis;
         public PlotModel PlotAnalysis
         {
-            get { return _plotAnalysis; }
-            set { this.RaiseAndSetIfChanged(ref _plotAnalysis, value); }
+            get { return GetValue<PlotModel>(); }
+            set { SetValue(value); }
         }
 
-        private IPlotController _plotAnalysisController;
         public IPlotController PlotAnalysisController
         {
-            get { return _plotAnalysisController; }
-            set { this.RaiseAndSetIfChanged(ref _plotAnalysisController, value); }
+            get { return GetValue<IPlotController>(); }
+            set { SetValue(value); }
         }
 
         public ObservableCollection<TickData> Ticks { get; private set; } 
