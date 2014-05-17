@@ -16,6 +16,18 @@ namespace kokos.WPF.ViewModel
 {
     public class SymbolViewModel : AReactiveViewModel
     {
+        private static string _lastLoadedDuration;
+
+        public string Duration
+        {
+            get { return _lastLoadedDuration; }
+            set
+            {
+                SetValue(value);
+                _lastLoadedDuration = value;
+            }
+        }
+
         public string Name
         {
             get { return GetValue<string>(); }
@@ -80,6 +92,7 @@ namespace kokos.WPF.ViewModel
             if (this.IsInDesignMode())
                 IsBusy = true;
 
+            Duration = "3m";
             Ticks = new ObservableCollection<TickData>();
             LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
@@ -94,12 +107,13 @@ namespace kokos.WPF.ViewModel
         {
             IsBusy = true;
 
-            var duration = parameter as string;
+            _lastLoadedDuration = (parameter as string) ?? _lastLoadedDuration;
 
             PERIOD_CODE periodCode;
             DateTime startDate, endDate;
 
-            GetTickDataInfo(ref duration, out startDate, out endDate, out periodCode);
+            GetTickDataInfo(ref _lastLoadedDuration, out startDate, out endDate, out periodCode);
+            Duration = _lastLoadedDuration;
 
             var tickCount = 1000000;
 
@@ -109,7 +123,7 @@ namespace kokos.WPF.ViewModel
             foreach (var tick in ticks)
                 Ticks.Add(tick);
 
-            UpdatePlot(duration);
+            UpdatePlot(_lastLoadedDuration);
             IsBusy = false;
             IsLoaded = true;
 

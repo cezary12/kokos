@@ -92,12 +92,72 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal" Margin="0,5">
-                                <Button Style="{StaticResource LinkButton}" Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d"/>
-                                <Button Style="{StaticResource LinkButton}" Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w"/>
-                                <Button Style="{StaticResource LinkButton}" Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m"/>
-                                <Button Style="{StaticResource LinkButton}" Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m"/>
-                                <Button Style="{StaticResource LinkButton}" Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m"/>
-                                <Button Style="{StaticResource LinkButton}" Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y"/>
+                                <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d" >
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1d">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1w">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1m">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="3m">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="12m">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                                <Button Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y">
+                                    <Button.Style>
+                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="5y">
+                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
                             </StackPanel>
                             <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
