@@ -73,7 +73,7 @@ namespace kokos.WPF.ServerConnect
 
                 ThrowIfNotSuccessful(range);
 
-                var tickData = range.RateInfos.Select(x => new TickData(x, range.Digits ?? 1)).ToList();
+                var tickData = range.RateInfos.Convert(range.Digits ?? 1).ToList();
 
                 return tickData;
             });
