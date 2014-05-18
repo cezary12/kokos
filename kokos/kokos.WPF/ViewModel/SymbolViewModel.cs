@@ -204,11 +204,11 @@ namespace kokos.WPF.ViewModel
 
             analysisPlotModel.Series.Add(CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues));
 
-            var mov10 = BasicAnalysis.CalculateMovingAverage(dateValues, 10);
-            var mov100 = BasicAnalysis.CalculateMovingAverage(dateValues, 100);
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(dateValues, 10)));
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(dateValues, 100)));
 
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), mov10));
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), mov100));
+            analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(dateValues, 10)));
+            analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(dateValues, 100)));
 
             PlotAnalysis = analysisPlotModel;
         }

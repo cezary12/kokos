@@ -30,8 +30,26 @@ namespace kokos.WPF.Analysis
 
         public static List<DateValue> CalculateMovingAverage(List<DateValue> items, int days)
         {
+            var grouped = GroupByDays(items, days);
+
+            return grouped
+                .Select(x => new DateValue {Date = x.Key.Date, Value = x.Value.Average(y => y.Value)})
+                .ToList();
+        }
+
+        public static List<DateValue> CalculateMax(List<DateValue> items, int days)
+        {
+            var grouped = GroupByDays(items, days);
+
+            return grouped
+                .Select(x => new DateValue { Date = x.Key.Date, Value = x.Value.Max(y => y.Value) })
+                .ToList();
+        }
+
+        private static List<KeyValuePair<DateValue, List<DateValue>>> GroupByDays(List<DateValue> items, int days)
+        {
             var temp = new List<DateValue>();
-            var result = new List<DateValue>();
+            var result = new List<KeyValuePair<DateValue, List<DateValue>>>();
 
             int i = items.Count - 1;
             int j = items.Count - 1;
@@ -49,15 +67,11 @@ namespace kokos.WPF.Analysis
                     }
                     else
                     {
-                        goto Calculate;
+                        result.Insert(0, new KeyValuePair<DateValue, List<DateValue>>(last, temp.ToList()));
+                        temp.RemoveAt(0);
+                        break;
                     }
                 }
-
-                return result;
-
-            Calculate:
-                result.Insert(0, new DateValue { Date = last.Date, Value = temp.Average(x => x.Value) });
-                temp.RemoveAt(0);
             }
 
             return result;
