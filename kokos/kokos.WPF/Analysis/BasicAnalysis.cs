@@ -61,7 +61,11 @@ namespace kokos.WPF.Analysis
                 for (; j >= 0; j--)
                 {
                     var current = items[j];
-                    if ((last.Date - current.Date).TotalDays < days)
+                    if (current == last)
+                    {
+                        continue;
+                    }
+                    if ((last.Date - current.Date).TotalDays <= days)
                     {
                         temp.Add(current);
                     }
