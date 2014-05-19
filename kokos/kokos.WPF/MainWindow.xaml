@@ -6,7 +6,7 @@
                       xmlns:attachedProperties="clr-namespace:kokos.WPF.AttachedProperties"
                       xmlns:oxy="http://oxyplot.codeplex.com"
                       x:Class="kokos.WPF.MainWindow"
-                      Title="kokos 0.1" Height="680" Width="800">
+                      Title="kokos 0.1" Height="800" Width="960">
     <controls:MetroWindow.Resources>
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
@@ -98,7 +98,6 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
-                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
                             <StackPanel Orientation="Horizontal" Margin="0,5">
                                 <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d" >
@@ -168,12 +167,21 @@
                                     </Button.Style>
                                 </Button>
                             </StackPanel>
-                            <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
+                            <ScrollViewer Grid.Row="1">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" MinHeight="300"/>
+                                        <RowDefinition Height="*" MinHeight="300"/>
+                                    </Grid.RowDefinitions>
+                                    <oxy:Plot Grid.Row="0" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                            <oxy:Plot Grid.Row="2" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
+                                    <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>                        </Grid>
+                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
                     </TabItem>
                     <TabItem Header="table">
                         <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
