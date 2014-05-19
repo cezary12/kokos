@@ -22,6 +22,18 @@ namespace kokos.WPF.ViewModel
 
         public MainViewModel()
         {
+            if (this.IsInDesignMode())
+            {
+                SelectedSymbol = new SymbolViewModel
+                {
+                    CategoryName = "Forex",
+                    Name = "EURUSD",
+                    Description = "US Dollar vs. EUR",
+                    Bid = 1.3710,
+                    Ask = 1.3712
+                };
+            }
+
             LoginViewModel = new LoginViewModel(PopulateSymbols);
             Symbols = new ObservableCollection<SymbolViewModel>();
 
@@ -36,7 +48,15 @@ namespace kokos.WPF.ViewModel
 
             foreach (var symbol in SyncApiWrapper.Instance.SymbolRecords)
             {
-                Symbols.Add(new SymbolViewModel {Name = symbol.Symbol, Bid = symbol.Bid, Ask = symbol.Ask});
+                Symbols.Add(new SymbolViewModel
+                {
+                    Name = symbol.Symbol, 
+                    CategoryName = symbol.CategoryName,
+                    Description = symbol.Description,
+                    
+                    Bid = symbol.Bid, 
+                    Ask = symbol.Ask
+                });
             }
 
             SelectedSymbol = Symbols.FirstOrDefault();

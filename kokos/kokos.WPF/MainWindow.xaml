@@ -65,7 +65,7 @@
         </Grid>
         <Grid Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" MinWidth="100" />
+                <ColumnDefinition Width="200" MinWidth="150" />
                 <ColumnDefinition Width="3"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
@@ -74,7 +74,16 @@
                       SelectedIndex="0" SelectedItem="{Binding SelectedSymbol}" IsSynchronizedWithCurrentItem="True">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}"></TextBlock>
+                        <StackPanel Margin="0,5">
+                            <TextBlock Text="{Binding CategoryName}" FontSize="10" />
+                            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Description}" FontSize="10"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
+                                <TextBlock Text=" - " FontSize="8"/>
+                                <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                            </StackPanel>
+                        </StackPanel>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
