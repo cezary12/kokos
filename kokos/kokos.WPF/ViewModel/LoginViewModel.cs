@@ -9,43 +9,38 @@ using System.Threading.Tasks;
 
 namespace kokos.WPF.ViewModel
 {
-    public class LoginViewModel : ReactiveObject
+    public class LoginViewModel : AReactiveViewModel
     {
         private readonly Action _executeOnLogging;
 
-        private string _login;
         public string Login
         {
-            get { return _login; }
-            set { this.RaiseAndSetIfChanged(ref _login, value); }
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
         }
 
-        private SecureString _password;
         public SecureString Password
         {
-            get { return _password; }
-            set { this.RaiseAndSetIfChanged(ref _password, value); }
+            get { return GetValue<SecureString>(); }
+            set { SetValue(value); }
         }
 
-        private bool _rememberLoginData;
         public bool RememberLoginData
         {
-            get { return _rememberLoginData; }
-            set { this.RaiseAndSetIfChanged(ref _rememberLoginData, value); }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
 
-        private bool _isBusy;
         public bool IsBusy
         {
-            get { return _isBusy; }
-            set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
 
-        private bool _isLoggedIn;
         public bool IsLoggedIn
         {
-            get { return _isLoggedIn; }
-            set { this.RaiseAndSetIfChanged(ref _isLoggedIn, value); }
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
         }
 
         public IReactiveCommand LoginCommand { get; private set; }
