@@ -1,10 +1,14 @@
-﻿using System;
-using System.Reactive.Linq;
-using kokos.WPF.ServerConnect;
+﻿using kokos.WPF.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using ReactiveUI;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Windows;
 
 namespace kokos.WPF.ViewModel
 {
@@ -12,7 +16,18 @@ namespace kokos.WPF.ViewModel
     {
         public LoginViewModel LoginViewModel { get; private set; }
 
+        private List<SymbolViewModel> _symbols;
         public ObservableCollection<SymbolViewModel> Symbols { get; private set; }
+
+        public IReactiveCommand SearchSymbolCommand { get; private set; }
+
+        public string SearchText
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
+
+        public IObservable<bool> HasSymbol; 
 
         public SymbolViewModel SelectedSymbol
         {
@@ -22,42 +37,71 @@ namespace kokos.WPF.ViewModel
 
         public MainViewModel()
         {
-            if (this.IsInDesignMode())
-            {
-                SelectedSymbol = new SymbolViewModel
-                {
-                    CategoryName = "Forex",
-                    Name = "EURUSD",
-                    Description = "US Dollar vs. EUR",
-                    Bid = 1.3710,
-                    Ask = 1.3712
-                };
-            }
+            RxApp.MainThreadScheduler = new DispatcherScheduler(Application.Current.Dispatcher);
 
             LoginViewModel = new LoginViewModel(PopulateSymbols);
             Symbols = new ObservableCollection<SymbolViewModel>();
 
+            SearchSymbolCommand = ReactiveCommand.CreateAsync(ExecuteSearchSymbol, RxApp.MainThreadScheduler);
+
             this.ObservableForProperty(x => x.SelectedSymbol)
-                .Throttle(TimeSpan.FromMilliseconds(200))
-                .InvokeCommand(this, x => x.SelectedSymbol.LoadTickData);
+                .Throttle(TimeSpan.FromSeconds(0.1), RxApp.MainThreadScheduler)
+                .Subscribe(x => { if (SelectedSymbol != null) SelectedSymbol.LoadTickData.Execute(null); });
+
+            this.ObservableForProperty(x => x.SearchText)
+                .Throttle(TimeSpan.FromSeconds(0.2), RxApp.MainThreadScheduler)
+                .Subscribe(SearchSymbolCommand.Execute);
+        }
+
+        private async Task<bool> ExecuteSearchSymbol(object parameter)
+        {
+            var symbols = await Task.Run(() => Filter());
+            AddSymbolsToCollection(symbols);
+
+            return true;
+        }
+
+        private IEnumerable<SymbolViewModel> Filter()
+        {
+            if (string.IsNullOrEmpty(SearchText))
+                return _symbols;
+
+            return _symbols.Where(x => x.Name.StartsWith(SearchText, StringComparison.InvariantCultureIgnoreCase))
+                .Union(_symbols.Where(x => ContainsSearchText(x.Name)))
+                .Union(_symbols.Where(x => ContainsSearchText(x.CategoryName)))
+                .Union(_symbols.Where(x => ContainsSearchText(x.Description)));
+        }
+
+        private bool ContainsSearchText(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+                return false;
+
+            return text.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
         private void PopulateSymbols()
         {
-            Symbols.Clear();
-
-            foreach (var symbol in SyncApiWrapper.Instance.SymbolRecords)
-            {
-                Symbols.Add(new SymbolViewModel
+            _symbols = SyncApiWrapper.Instance.SymbolRecords
+                .Select(symbol => new SymbolViewModel
                 {
-                    Name = symbol.Symbol, 
+                    Name = symbol.Symbol,
                     CategoryName = symbol.CategoryName,
                     Description = symbol.Description,
-                    
-                    Bid = symbol.Bid, 
+
+                    Bid = symbol.Bid,
                     Ask = symbol.Ask
-                });
-            }
+                })
+                .ToList();
+
+            AddSymbolsToCollection(_symbols);
+        }
+
+        private void AddSymbolsToCollection(IEnumerable<SymbolViewModel> symbols)
+        {
+            Symbols.Clear();
+            foreach (var symbol in symbols)
+                Symbols.Add(symbol);
 
             SelectedSymbol = Symbols.FirstOrDefault();
         }

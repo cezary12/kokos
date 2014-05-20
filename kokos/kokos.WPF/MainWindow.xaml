@@ -10,6 +10,7 @@
     <controls:MetroWindow.Resources>
         <converters:NegateBooleanConverter x:Key="NegateBooleanConverter"/>
         <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <!--Link Button-->
         <SolidColorBrush x:Key="LinkButtonForeground" Color="#1297FB"/>
         <SolidColorBrush x:Key="LinkButtonForegroundHighlighted" Color="#55AAFF"/>
@@ -65,29 +66,40 @@
         </Grid>
         <Grid Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" MinWidth="150" />
+                <ColumnDefinition Width="275" MinWidth="275" />
                 <ColumnDefinition Width="3"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"></GridSplitter>
-            <ListBox Grid.Column="0" ItemsSource="{Binding Symbols}"
-                      SelectedIndex="0" SelectedItem="{Binding SelectedSymbol}" IsSynchronizedWithCurrentItem="True">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel Margin="0,5">
-                            <TextBlock Text="{Binding CategoryName}" FontSize="10" />
-                            <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-                            <TextBlock Text="{Binding Description}" FontSize="10"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
-                                <TextBlock Text=" - " FontSize="8"/>
-                                <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBox controls:TextboxHelper.Watermark="search"
+                         controls:TextboxHelper.ButtonCommand="{Binding SearchSymbolCommand}"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{DynamicResource SearchMetroTextBox}"
+                         Margin="0,5"/>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}" IsSynchronizedWithCurrentItem="True">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,5">
+                                <TextBlock Text="{Binding CategoryName}" FontSize="10" />
+                                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                <TextBlock Text="{Binding Description}" FontSize="10"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
+                                    <TextBlock Text=" - " FontSize="8"/>
+                                    <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Grid Grid.Column="2"  IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+            <Grid Grid.Column="2"  IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"
+                  Visibility="{Binding SelectedSymbol, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
@@ -199,7 +211,7 @@
                     </TabItem>
                 </TabControl>
             </Grid>
-            <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
