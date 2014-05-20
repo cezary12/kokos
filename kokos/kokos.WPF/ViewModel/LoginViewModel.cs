@@ -48,7 +48,7 @@ namespace kokos.WPF.ViewModel
 
         public LoginViewModel(Action executeOnLogging)
         {
-            if (this.IsInDesignMode())
+            if (IsInDesignMode)
             {
                 IsLoggedIn = true;
             }

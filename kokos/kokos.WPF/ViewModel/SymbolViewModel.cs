@@ -101,7 +101,7 @@ namespace kokos.WPF.ViewModel
 
         public SymbolViewModel()
         {
-            if (this.IsInDesignMode())
+            if (IsInDesignMode)
                 IsBusy = true;
 
             Duration = "3m";
