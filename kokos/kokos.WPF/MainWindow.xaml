@@ -81,7 +81,8 @@
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Style="{DynamicResource SearchMetroTextBox}"
                          Margin="0,5"/>
-                <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}" IsSynchronizedWithCurrentItem="True">
+                <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}"
+                         VirtualizingStackPanel.IsVirtualizing="False" ScrollViewer.CanContentScroll="False">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="0,5">
