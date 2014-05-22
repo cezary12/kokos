@@ -27,8 +27,6 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public IObservable<bool> HasSymbol; 
-
         public SymbolViewModel SelectedSymbol
         {
             get { return GetValue<SymbolViewModel>(); }
@@ -46,11 +44,19 @@ namespace kokos.WPF.ViewModel
 
             this.ObservableForProperty(x => x.SelectedSymbol)
                 .Throttle(TimeSpan.FromSeconds(0.1), RxApp.MainThreadScheduler)
-                .Subscribe(x => { if (SelectedSymbol != null) SelectedSymbol.LoadTickData.Execute(null); });
+                .Subscribe(ExecuteLoadTickData);
 
             this.ObservableForProperty(x => x.SearchText)
                 .Throttle(TimeSpan.FromSeconds(0.2), RxApp.MainThreadScheduler)
                 .Subscribe(SearchSymbolCommand.Execute);
+        }
+
+        private void ExecuteLoadTickData(object parameter)
+        {
+            if (SelectedSymbol == null)
+                return;
+
+            SelectedSymbol.LoadTickData.Execute(null);
         }
 
         private async Task<bool> ExecuteSearchSymbol(object parameter)

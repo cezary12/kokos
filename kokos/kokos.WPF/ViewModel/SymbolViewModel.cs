@@ -17,6 +17,12 @@ namespace kokos.WPF.ViewModel
     public class SymbolViewModel : AReactiveViewModel
     {
         private static string _lastLoadedDuration;
+        
+        public string StatusText
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
 
         public string Duration
         {
@@ -51,7 +57,6 @@ namespace kokos.WPF.ViewModel
             get { return GetValue<double?>(); }
             set { SetValue(value); }
         }
-
 
         public double? Ask
         {
@@ -101,6 +106,8 @@ namespace kokos.WPF.ViewModel
 
         public SymbolViewModel()
         {
+            StatusText = "Ready";
+
             if (IsInDesignMode)
                 IsBusy = true;
 
@@ -118,6 +125,7 @@ namespace kokos.WPF.ViewModel
         private async Task<bool> ExecuteLoadTickDataAsync(object parameter)
         {
             IsBusy = true;
+            StatusText = "Loading...";
 
             _lastLoadedDuration = (parameter as string) ?? _lastLoadedDuration;
 
@@ -136,6 +144,8 @@ namespace kokos.WPF.ViewModel
                 Ticks.Add(tick);
 
             UpdatePlot(_lastLoadedDuration);
+
+            StatusText = "Ready";
             IsBusy = false;
             IsLoaded = true;
 

@@ -64,160 +64,165 @@
             </StackPanel>
             <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
-        <Grid Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="275" MinWidth="275" />
-                <ColumnDefinition Width="3"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"></GridSplitter>
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBox controls:TextboxHelper.Watermark="search"
+        <DockPanel Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Grid DockPanel.Dock="Bottom" Margin="5,2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text ="{Binding SelectedSymbol.StatusText}"/>
+                <ProgressBar Grid.Column="1" IsIndeterminate="True" Width="200" 
+                             Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+            </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="275" MinWidth="275" />
+                    <ColumnDefinition Width="3"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"></GridSplitter>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBox controls:TextboxHelper.Watermark="search"
                          controls:TextboxHelper.ButtonCommand="{Binding SearchSymbolCommand}"
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Style="{DynamicResource SearchMetroTextBox}"
                          Margin="0,5"/>
-                <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}"
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}"
                          VirtualizingStackPanel.IsVirtualizing="False" ScrollViewer.CanContentScroll="False">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Margin="0,5">
-                                <TextBlock Text="{Binding CategoryName}" FontSize="10" />
-                                <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-                                <TextBlock Text="{Binding Description}" FontSize="10"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
-                                    <TextBlock Text=" - " FontSize="8"/>
-                                    <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,5">
+                                    <TextBlock Text="{Binding CategoryName}" FontSize="10" />
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                    <TextBlock Text="{Binding Description}" FontSize="10"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
+                                        <TextBlock Text=" - " FontSize="8"/>
+                                        <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                                    </StackPanel>
                                 </StackPanel>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </Grid>
-            <Grid Grid.Column="2"  IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+                <Grid Grid.Column="2"  IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"
                   Visibility="{Binding SelectedSymbol, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TabControl Grid.Row="1">
-                    <TabItem Header="chart">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <StackPanel Orientation="Horizontal" Margin="0,5">
-                                <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d" >
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1d">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                                <Button Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w">
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1w">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                                <Button Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m">
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1m">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                                <Button Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m">
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="3m">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                                <Button Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m">
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="12m">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                                <Button Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y">
-                                    <Button.Style>
-                                        <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="5y">
-                                                    <Setter Property="FontWeight" Value="Bold"></Setter>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Button.Style>
-                                </Button>
-                            </StackPanel>
-                            <ScrollViewer Grid.Row="1">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="*" MinHeight="300"/>
-                                        <RowDefinition Height="*" MinHeight="300"/>
-                                    </Grid.RowDefinitions>
-                                    <oxy:Plot Grid.Row="0" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TabControl Grid.Row="1">
+                        <TabItem Header="chart">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal" Margin="0,5">
+                                    <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d" >
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1d">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1w">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1m">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="3m">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="12m">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                    <Button Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y">
+                                        <Button.Style>
+                                            <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="5y">
+                                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </StackPanel>
+                                <ScrollViewer Grid.Row="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" MinHeight="300"/>
+                                            <RowDefinition Height="*" MinHeight="300"/>
+                                        </Grid.RowDefinitions>
+                                        <oxy:Plot Grid.Row="0" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                                    <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
+                                        <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
                                       Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                       IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                                </Grid>
-                            </ScrollViewer>
-                        </Grid>
-                    </TabItem>
-                    <TabItem Header="table">
-                        <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
+                                    </Grid>
+                                </ScrollViewer>
+                            </Grid>
+                        </TabItem>
+                        <TabItem Header="table">
+                            <DataGrid  ItemsSource="{Binding SelectedSymbol.Ticks}" IsReadOnly="True" AutoGenerateColumns="False"
                                    VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
                                    Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
                                    IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" MinWidth="120"/>
-                                <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
-                                <controls:DataGridNumericUpDownColumn Header="High" Binding="{Binding High, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
-                                <controls:DataGridNumericUpDownColumn Header="Low" Binding="{Binding Low, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
-                                <controls:DataGridNumericUpDownColumn Header="Close" Binding="{Binding Close, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </TabItem>
-                </TabControl>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Time" Binding="{Binding TimeString}" MinWidth="120"/>
+                                    <controls:DataGridNumericUpDownColumn Header="Open" Binding="{Binding Open, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                    <controls:DataGridNumericUpDownColumn Header="High" Binding="{Binding High, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                    <controls:DataGridNumericUpDownColumn Header="Low" Binding="{Binding Low, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                    <controls:DataGridNumericUpDownColumn Header="Close" Binding="{Binding Close, Mode=OneTime}" StringFormat="N4" MinWidth="110" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </TabItem>
+                    </TabControl>
+                </Grid>
             </Grid>
-            <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <controls:MetroProgressBar Grid.Row="0" IsIndeterminate="True" HorizontalAlignment="Stretch"/>
-            </Grid>
-        </Grid>
+        </DockPanel>
     </Grid>
 </controls:MetroWindow>
