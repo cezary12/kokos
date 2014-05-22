@@ -1,13 +1,12 @@
-﻿using System.ComponentModel;
-using System.Windows;
-using ReactiveUI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 
 namespace kokos.WPF.ViewModel.Base
 {
-    public abstract class AReactiveViewModel : ReactiveObject
+    public abstract class AReactiveViewModel : INotifyPropertyChanged
     {
         private readonly Dictionary<string, object> _store = new Dictionary<string, object>();
 
@@ -44,7 +43,16 @@ namespace kokos.WPF.ViewModel.Base
                 return;
 
             _store[propertyName] = newValue;
-            this.RaisePropertyChanged(propertyName);
+            RaisePropertyChanged(propertyName);
         }
+
+        protected void RaisePropertyChanged(string propertyName)
+        {
+            var propChanged = PropertyChanged;
+            if (propChanged != null)
+                propChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
