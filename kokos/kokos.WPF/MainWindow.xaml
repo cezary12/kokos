@@ -35,6 +35,21 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        
+        <!-- ProgressBar Colors-->
+        <!--<Color x:Key="ProgressIndeterminateColor1">#33119EDA</Color>
+        <Color x:Key="ProgressIndeterminateColor2">#33119EDA</Color>
+        <Color x:Key="ProgressIndeterminateColor3">#33119EDA</Color>
+        <Color x:Key="ProgressIndeterminateColor4">#33119EDA</Color>
+
+        <Color x:Key="HighlightColor">#FF086F9E</Color>
+        <Color x:Key="AccentColor3">#66119EDA</Color>
+        
+        <LinearGradientBrush x:Key="ProgressBrush" EndPoint="0.001,0.5" StartPoint="1.002,0.5">
+            <GradientStop Color="{DynamicResource HighlightColor}" Offset="0"/>
+            <GradientStop Color="{DynamicResource AccentColor3}" Offset="1"/>
+        </LinearGradientBrush>-->
+        
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.DataContext>
         <viewModel:MainViewModel/>
