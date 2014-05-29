@@ -205,20 +205,15 @@
                                         </Button.Style>
                                     </Button>
                                 </StackPanel>
-                                <ScrollViewer Grid.Row="1">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" MinHeight="300"/>
-                                            <RowDefinition Height="*" MinHeight="300"/>
-                                        </Grid.RowDefinitions>
-                                        <oxy:Plot Grid.Row="0" Model="{Binding SelectedSymbol.Plot}" Controller="{Binding SelectedSymbol.PlotController}"
-                                      Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                                        <oxy:Plot Grid.Row="1" Model="{Binding SelectedSymbol.PlotAnalysis}" Controller="{Binding SelectedSymbol.PlotAnalysisController}"
-                                      Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}"/>
-                                    </Grid>
-                                </ScrollViewer>
+                                <ListView Grid.Row="1" ItemsSource="{Binding SelectedSymbol.Plots}" 
+                                          Visibility="{Binding SelectedSymbol.IsLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                          IsEnabled="{Binding SelectedSymbol.IsBusy, Converter={StaticResource NegateBooleanConverter}}">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <oxy:Plot MinHeight="375" Model="{Binding Plot}" Controller="{Binding PlotController}" />
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
                             </Grid>
                         </TabItem>
                         <TabItem Header="table">

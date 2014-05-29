@@ -77,30 +77,6 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public PlotModel Plot
-        {
-            get { return GetValue<PlotModel>(); }
-            set { SetValue(value); }
-        }
-
-        public IPlotController PlotController
-        {
-            get { return GetValue<IPlotController>(); }
-            set { SetValue(value); }
-        }
-
-        public PlotModel PlotAnalysis
-        {
-            get { return GetValue<PlotModel>(); }
-            set { SetValue(value); }
-        }
-
-        public IPlotController PlotAnalysisController
-        {
-            get { return GetValue<IPlotController>(); }
-            set { SetValue(value); }
-        }
-
         public ObservableCollection<PlotViewModel> Plots { get; private set; } 
 
         public ObservableCollection<TickData> Ticks { get; private set; } 
@@ -119,9 +95,6 @@ namespace kokos.WPF.ViewModel
             Ticks = new ObservableCollection<TickData>();
             LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
-
-            PlotController = CreatePlotController();
-            PlotAnalysisController = CreatePlotController();
 
             UpdatePlot("3m");
         }
@@ -193,6 +166,8 @@ namespace kokos.WPF.ViewModel
 
         private void UpdatePlot(string duration)
         {
+            Plots.Clear();
+
             var plotModel = CreatePlotModel(Name);
 
             var lime = OxyColor.FromUInt32(0xCCA4C400);
@@ -222,7 +197,7 @@ namespace kokos.WPF.ViewModel
 
             plotModel.Series.Add(candleStickSeries);
 
-            Plot = plotModel;
+            Plots.Add(new PlotViewModel(plotModel));
 
             var analysisPlotModel = CreatePlotModel("Moving Average");
 
@@ -236,7 +211,7 @@ namespace kokos.WPF.ViewModel
             analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(Ticks, 10)));
             analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(Ticks, 100)));
 
-            PlotAnalysis = analysisPlotModel;
+            Plots.Add(new PlotViewModel(analysisPlotModel));
 
             var clenow = new SimpleClenow(Ticks);
         }
@@ -285,17 +260,6 @@ namespace kokos.WPF.ViewModel
             plotModel.Axes.Add(linearAxis1);
 
             return plotModel;
-        }
-
-        private static PlotController CreatePlotController()
-        {
-            // create a new plot controller with default bindings
-            var plotController = new PlotController();
-
-            // add a tracker command to the mouse enter event
-            plotController.BindMouseEnter(PlotCommands.HoverPointsOnlyTrack);
-
-            return plotController;
         }
     }
 }
