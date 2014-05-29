@@ -15,14 +15,14 @@ namespace kokos.WPF.ServerConnect
         public double? Vol { get; private set; }
         public long Ctm { get; private set; }
         
-        public DateTime? Time
+        public DateTime Time
         {
             get { return Ctm.FromUnixMiliseconds(); }
         }
 
         public string TimeString
         {
-            get { return Time == null ? "null" : (Time.Value.ToShortDateString() + " " + Time.Value.ToShortTimeString()); }
+            get { return Time.ToShortDateString() + " " + Time.ToShortTimeString(); }
         }
 
         public TickData(double open, double high, double low, double close, double? volume, long ctm)

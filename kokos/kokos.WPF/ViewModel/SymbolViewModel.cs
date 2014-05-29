@@ -1,5 +1,6 @@
 ﻿using kokos.WPF.Analysis;
 using kokos.WPF.ServerConnect;
+using kokos.WPF.Strategies;
 using kokos.WPF.ViewModel.Base;
 using OxyPlot;
 using OxyPlot.Axes;
@@ -100,6 +101,8 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
+        public ObservableCollection<PlotViewModel> Plots { get; private set; } 
+
         public ObservableCollection<TickData> Ticks { get; private set; } 
 
         public IReactiveCommand LoadTickData { get; private set; }
@@ -112,6 +115,7 @@ namespace kokos.WPF.ViewModel
                 IsBusy = true;
 
             Duration = "3m";
+            Plots = new ObservableCollection<PlotViewModel>();
             Ticks = new ObservableCollection<TickData>();
             LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
@@ -226,13 +230,15 @@ namespace kokos.WPF.ViewModel
 
             analysisPlotModel.Series.Add(CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues));
 
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(dateValues, 10)));
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(dateValues, 100)));
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(Ticks, 10)));
+            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(Ticks, 100)));
 
-            analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(dateValues, 10)));
-            analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(dateValues, 100)));
+            analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(Ticks, 10)));
+            analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(Ticks, 100)));
 
             PlotAnalysis = analysisPlotModel;
+
+            var clenow = new SimpleClenow(Ticks);
         }
 
         private LineSeries CreateLineSeries(string title, OxyColor color, IEnumerable<DateValue> dateValues)

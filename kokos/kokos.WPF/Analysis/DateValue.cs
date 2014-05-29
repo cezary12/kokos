@@ -16,18 +16,16 @@ namespace kokos.WPF.Analysis
 
         private string GetDebuggerDisplay()
         {
-            return Date.ToShortDateString() + " " + Value.ToString("N");
+            return Date.ToShortDateString() + " " + Value.ToString("N4");
         }
     }
 
     public static class DateValueExtensions
     {
-        public static IEnumerable<DateValue> ToDateValuePoints(this IEnumerable<TickData> ticks, Func<TickData, double?> valueSelector)
+        public static IEnumerable<DateValue> ToDateValuePoints(this IEnumerable<TickData> ticks, Func<TickData, double> valueSelector)
         {
             return (ticks ?? new List<TickData>())
-                .Select(x => new {x.Time, Value = valueSelector(x)})
-                .Where(x => x.Time.HasValue && x.Value.HasValue)
-                .Select(x => new DateValue {Date = x.Time.Value, Value = x.Value.Value});
+                .Select(x => new DateValue { Date = x.Time, Value = valueSelector(x) });
         }
 
         public static IEnumerable<DataPoint> ToDataPoints(this IEnumerable<DateValue> dateValues)

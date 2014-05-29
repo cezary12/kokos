@@ -122,10 +122,14 @@
     <Compile Include="Security\PasswordExtensions.cs" />
     <Compile Include="ServerConnect\SyncApiWrapper.cs" />
     <Compile Include="ServerConnect\TickData.cs" />
+    <Compile Include="Strategies\Decision.cs" />
+    <Compile Include="Strategies\DecisionType.cs" />
+    <Compile Include="Strategies\SimpleClenow.cs" />
     <Compile Include="Utils\DateTimeExtensions.cs" />
     <Compile Include="ViewModel\Base\AReactiveViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\PlotViewModel.cs" />
     <Compile Include="ViewModel\SymbolViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
