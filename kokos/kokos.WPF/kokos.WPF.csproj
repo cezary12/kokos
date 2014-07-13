@@ -37,38 +37,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MahApps.Metro, Version=0.14.0.45, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MahApps.Metro, Version=0.14.0.94, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\MahApps.Metro.0.14.0-ALPHA45\lib\net45\MahApps.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.14.0-ALPHA94\lib\net45\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="OxyPlot">
-      <HintPath>..\packages\OxyPlot.Core.2014.1.308.1\lib\portable-net4+sl4+wp71+win8\OxyPlot.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\OxyPlot.Core.2014.1.319.1\lib\portable-net4+sl4+wp71+win8\OxyPlot.dll</HintPath>
     </Reference>
-    <Reference Include="OxyPlot.Wpf, Version=2014.1.308.1, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
+    <Reference Include="OxyPlot.Wpf, Version=2014.1.319.1, Culture=neutral, PublicKeyToken=75e952ba404cdbb0, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\OxyPlot.Wpf.2014.1.308.1\lib\NET45\OxyPlot.Wpf.dll</HintPath>
+      <HintPath>..\packages\OxyPlot.Wpf.2014.1.319.1\lib\NET45\OxyPlot.Wpf.dll</HintPath>
     </Reference>
-    <Reference Include="OxyPlot.Xps">
-      <HintPath>..\packages\OxyPlot.Wpf.2014.1.308.1\lib\NET45\OxyPlot.Xps.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="OxyPlot.Xps, Version=2014.1.319.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\OxyPlot.Wpf.2014.1.319.1\lib\NET45\OxyPlot.Xps.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\packages\reactiveui-core.5.99.5-beta\lib\Portable-Net45+WinRT45+WP8\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\reactiveui-core.6.0.0\lib\Net45\ReactiveUI.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Blend">
-      <HintPath>..\packages\reactiveui-platforms.5.99.5-beta\lib\net45\ReactiveUI.Blend.dll</HintPath>
+    <Reference Include="ReactiveUI.Blend, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\reactiveui-blend.6.0.0\lib\net45\ReactiveUI.Blend.dll</HintPath>
     </Reference>
-    <Reference Include="ReactiveUI.Xaml">
-      <HintPath>..\packages\reactiveui-platforms.5.99.5-beta\lib\net45\ReactiveUI.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.3.1\lib\Net45\Splat.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Splat, Version=1.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Splat.1.3.3\lib\Net45\Splat.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -94,7 +88,7 @@
     </Reference>
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MahApps.Metro.0.14.0-ALPHA45\lib\net45\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MahApps.Metro.0.14.0-ALPHA94\lib\net45\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />

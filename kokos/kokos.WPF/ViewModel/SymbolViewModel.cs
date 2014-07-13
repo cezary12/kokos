@@ -94,7 +94,7 @@ namespace kokos.WPF.ViewModel
             Duration = "3m";
             Plots = new ObservableCollection<PlotViewModel>();
             Ticks = new ObservableCollection<TickData>();
-            LoadTickData = ReactiveCommand.CreateAsync(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
+            LoadTickData = ReactiveCommand.CreateAsyncTask(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
 
             UpdatePlot("3m");

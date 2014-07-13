@@ -55,8 +55,8 @@ namespace kokos.WPF.ViewModel
 
             _executeOnLogging = executeOnLogging;
 
-            LoginCommand = ReactiveCommand.CreateAsync(CreateCanExecutePasswordObservable(), ExecuteLoginAsync, RxApp.MainThreadScheduler);
-            LogoutCommand = ReactiveCommand.CreateAsync(ExecuteLogoutAsync, RxApp.MainThreadScheduler);
+            LoginCommand = ReactiveCommand.CreateAsyncTask(CreateCanExecutePasswordObservable(), ExecuteLoginAsync, RxApp.MainThreadScheduler);
+            LogoutCommand = ReactiveCommand.CreateAsyncTask(ExecuteLogoutAsync, RxApp.MainThreadScheduler);
 
             RememberLoginData = Settings.Default.RememberLoginData;
             Login = Settings.Default.Login;

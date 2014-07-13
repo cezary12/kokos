@@ -40,7 +40,7 @@ namespace kokos.WPF.ViewModel
             LoginViewModel = new LoginViewModel(PopulateSymbols);
             Symbols = new ObservableCollection<SymbolViewModel>();
 
-            SearchSymbolCommand = ReactiveCommand.CreateAsync(ExecuteSearchSymbol, RxApp.MainThreadScheduler);
+            SearchSymbolCommand = ReactiveCommand.CreateAsyncTask(ExecuteSearchSymbol, RxApp.MainThreadScheduler);
 
             this.ObservableForProperty(x => x.SelectedSymbol)
                 .Throttle(TimeSpan.FromSeconds(0.1), RxApp.MainThreadScheduler)
