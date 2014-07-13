@@ -35,7 +35,7 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
         <!-- ProgressBar Colors-->
         <!--<Color x:Key="ProgressIndeterminateColor1">#33119EDA</Color>
         <Color x:Key="ProgressIndeterminateColor2">#33119EDA</Color>
@@ -49,7 +49,7 @@
             <GradientStop Color="{DynamicResource HighlightColor}" Offset="0"/>
             <GradientStop Color="{DynamicResource AccentColor3}" Offset="1"/>
         </LinearGradientBrush>-->
-        
+
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.DataContext>
         <viewModel:MainViewModel/>
@@ -80,18 +80,20 @@
             <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
         <DockPanel Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid DockPanel.Dock="Bottom" Margin="5,2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text ="{Binding SelectedSymbol.StatusText}"/>
-                <ProgressBar Grid.Column="1" IsIndeterminate="True" Width="200" 
+            <Grid DockPanel.Dock="Bottom" Background="{DynamicResource AccentColorBrush}">
+                <Grid Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text ="{Binding SelectedSymbol.StatusText}" Foreground="White"/>
+                    <ProgressBar Grid.Column="1" IsIndeterminate="True" Width="200" 
                              Visibility="{Binding SelectedSymbol.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}, FallbackValue=Hidden}"/>
+                </Grid>
             </Grid>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="275" MinWidth="275" />
+                    <ColumnDefinition Width="315" MinWidth="275" />
                     <ColumnDefinition Width="3"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
@@ -106,7 +108,7 @@
                          Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                          Style="{DynamicResource SearchMetroTextBox}"
                          Margin="0,5"/>
-                    <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol}"
+                    <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol, Delay=100}"
                          VirtualizingStackPanel.IsVirtualizing="False" ScrollViewer.CanContentScroll="False">
                         <ListBox.ItemTemplate>
                             <DataTemplate>

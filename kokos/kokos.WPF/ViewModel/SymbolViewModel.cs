@@ -3,6 +3,7 @@ using kokos.WPF.ServerConnect;
 using kokos.WPF.Strategies;
 using kokos.WPF.ViewModel.Base;
 using OxyPlot;
+using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using ReactiveUI;
@@ -18,7 +19,7 @@ namespace kokos.WPF.ViewModel
     public class SymbolViewModel : AReactiveViewModel
     {
         private static string _lastLoadedDuration;
-        
+
         public string StatusText
         {
             get { return GetValue<string>(); }
@@ -77,9 +78,9 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public ObservableCollection<PlotViewModel> Plots { get; private set; } 
+        public ObservableCollection<PlotViewModel> Plots { get; private set; }
 
-        public ObservableCollection<TickData> Ticks { get; private set; } 
+        public ObservableCollection<TickData> Ticks { get; private set; }
 
         public IReactiveCommand LoadTickData { get; private set; }
 
@@ -168,24 +169,13 @@ namespace kokos.WPF.ViewModel
         {
             Plots.Clear();
 
-            var plotModel = CreatePlotModel(Name);
-
-            var lime = OxyColor.FromUInt32(0xCCA4C400);
-            var amber = OxyColor.FromUInt32(0xCCF0A30A);
-
-            var green = OxyColor.FromUInt32(0xCC60A917);
-            var orange = OxyColor.FromUInt32(0xCCFA6800);
-
-            var increasingFill = green;
-            var decreasingFill = orange;
-
-            var candleStickSeries = new CandleStickSeries
+            var candles = CreatePlot(Name, new CandleStickSeries
             {
                 //CandleWidth = 6,
                 Title = Name + " " + duration,
                 Color = OxyColor.FromRgb(57, 58, 59), //black
-                IncreasingFill = increasingFill,
-                DecreasingFill = decreasingFill,
+                IncreasingFill = OxyColor.FromUInt32(0xCC60A917), //green
+                DecreasingFill = OxyColor.FromUInt32(0xCCFA6800), //orange
                 DataFieldX = "Time",
                 DataFieldHigh = "High",
                 DataFieldLow = "Low",
@@ -193,27 +183,87 @@ namespace kokos.WPF.ViewModel
                 DataFieldClose = "Close",
                 TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
                 ItemsSource = (Ticks ?? new ObservableCollection<TickData>())
-            };
+            });
 
-            plotModel.Series.Add(candleStickSeries);
-
-            Plots.Add(new PlotViewModel(plotModel));
-
-            var analysisPlotModel = CreatePlotModel("Moving Average");
+            Plots.Add(new PlotViewModel(candles));
 
             var dateValues = Ticks.ToDateValuePoints(x => x.Close).ToList();
 
-            analysisPlotModel.Series.Add(CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues));
+            var plotMa = CreatePlot("Moving Average",
+                CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues),
+                CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(Ticks, 10)),
+                CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(Ticks, 100)));
 
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(Ticks, 10)));
-            analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(Ticks, 100)));
+            var plotMinMax = CreatePlot("Min max",
+                CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues),
+                CreateLineSeries("Max 50", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMax(Ticks, 50)),
+                CreateLineSeries("Min 50", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMin(Ticks, 50)));
 
-            analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(Ticks, 10)));
-            analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(Ticks, 100)));
+            var returns = CreatePlot("Returns", "P4",
+                CreateTwoColorLineSeries("Annualized Returns", OxyColor.FromUInt32(0xCC60A917), OxyColor.FromUInt32(0xCCFA6800), CalculateReturns(dateValues)));
 
-            Plots.Add(new PlotViewModel(analysisPlotModel));
+            Plots.Add(new PlotViewModel(plotMa));
+            Plots.Add(new PlotViewModel(plotMinMax));
+            Plots.Add(new PlotViewModel(returns));
+
+            //analysisPlotModel.Series.Add(closePrices);
+
+            //analysisPlotModel.Series.Add(CreateLineSeries("MA 10", OxyColor.FromUInt32(0xCCA4C400), BasicAnalysis.CalculateMovingAverage(Ticks, 10)));
+            //analysisPlotModel.Series.Add(CreateLineSeries("MA 100", OxyColor.FromUInt32(0xCC60A917), BasicAnalysis.CalculateMovingAverage(Ticks, 100)));
+
+            //analysisPlotModel.Series.Add(CreateLineSeries("Max 10", OxyColor.FromUInt32(0xCC911A0E), BasicAnalysis.CalculateMax(Ticks, 10)));
+            //analysisPlotModel.Series.Add(CreateLineSeries("Max 100", OxyColor.FromUInt32(0xCC1569CE), BasicAnalysis.CalculateMax(Ticks, 100)));
+
+            //if (dateValues.Count > 30)
+            //{
+            //    var anno1 = new TextAnnotation();
+            //    anno1.Text = "sdkjfhsdjkfhsd";
+            //    anno1.TextPosition = DateTimeAxis.CreateDataPoint(dateValues[10].Date, dateValues[10].Value);
+            //    analysisPlotModel.Annotations.Add(anno1);
+
+            //    var anno2 = new ArrowAnnotation();
+            //    anno2.Text = "bla blas bla";
+            //    anno2.EndPoint = DateTimeAxis.CreateDataPoint(dateValues[30].Date, dateValues[30].Value);
+            //    anno2.ArrowDirection = new ScreenVector(50, anno2.EndPoint.Y * 0.3);
+            //    analysisPlotModel.Annotations.Add(anno2);
+            //}
+
+            //Plots.Add(new PlotViewModel(analysisPlotModel));
 
             var clenow = new SimpleClenow(Ticks);
+        }
+
+        private static List<DateValue> CalculateReturns(IList<DateValue> dateValues)
+        {
+            var returns = new List<DateValue>();
+
+            for (int i = 1; i < dateValues.Count; i++)
+            {
+                var days = (dateValues[i].Date - dateValues[i - 1].Date).TotalDays;
+                var yf = days/252;
+                returns.Add(new DateValue
+                {
+                    Date = dateValues[i].Date,
+                    Value = Math.Log(dateValues[i].Value / dateValues[i - 1].Value) / yf
+                });
+            }
+
+            return returns;
+        }
+
+        private static PlotModel CreatePlot(string title, string xaxisStringFormat, params Series[] lineSeries)
+        {
+            var plotModel = CreatePlotModel(title, xaxisStringFormat);
+
+            foreach (var series in lineSeries)
+                plotModel.Series.Add(series);
+
+            return plotModel;
+        }
+
+        private static PlotModel CreatePlot(string title, params Series[] lineSeries)
+        {
+            return CreatePlot(title, "N4", lineSeries);
         }
 
         private LineSeries CreateLineSeries(string title, OxyColor color, IEnumerable<DateValue> dateValues)
@@ -227,7 +277,18 @@ namespace kokos.WPF.ViewModel
             return lineSeries;
         }
 
-        private static PlotModel CreatePlotModel(string title)
+        private TwoColorLineSeries CreateTwoColorLineSeries(string title, OxyColor color, OxyColor color2, IEnumerable<DateValue> dateValues)
+        {
+            var lineSeries = new TwoColorLineSeries { Title = title, Color = color, Color2 = color2 };
+
+            var dataPoints = dateValues.ToDataPoints();
+
+            lineSeries.Points.AddRange(dataPoints);
+
+            return lineSeries;
+        }
+
+        private static PlotModel CreatePlotModel(string title, string xaxisStringFormat)
         {
             var plotModel = new PlotModel { Title = title, LegendSymbolLength = 24 };
 
@@ -249,7 +310,7 @@ namespace kokos.WPF.ViewModel
             var linearAxis1 = new LinearAxis
             {
                 Position = AxisPosition.Left,
-                StringFormat = "N4",
+                StringFormat = xaxisStringFormat,
                 IsPanEnabled = false,
                 IsZoomEnabled = false,
                 MajorGridlineStyle = LineStyle.Solid,

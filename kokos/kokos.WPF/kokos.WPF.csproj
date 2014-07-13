@@ -122,7 +122,7 @@
     <Compile Include="Security\PasswordExtensions.cs" />
     <Compile Include="ServerConnect\SyncApiWrapper.cs" />
     <Compile Include="ServerConnect\TickData.cs" />
-    <Compile Include="Strategies\Decision.cs" />
+    <Compile Include="Strategies\Signal.cs" />
     <Compile Include="Strategies\DecisionType.cs" />
     <Compile Include="Strategies\SimpleClenow.cs" />
     <Compile Include="Utils\DateTimeExtensions.cs" />

@@ -4,17 +4,19 @@ using System.Diagnostics;
 namespace kokos.WPF.Strategies
 {
     [DebuggerDisplay("{GetDebuggerDisplay()}")]
-    public class Decision
+    public class Signal
     {
         public DateTime Date { get; set; }
         public DecisionType DecisionType { get; set; }
         public double Price { get; set; }
+        public string Comment { get; set; }
 
-        public Decision(DateTime date, DecisionType decisionType, double price)
+        public Signal(DateTime date, DecisionType decisionType, double price, string comment = "")
         {
             Date = date;
             DecisionType = decisionType;
             Price = price;
+            Comment = comment;
         }
 
         private string GetDebuggerDisplay()
