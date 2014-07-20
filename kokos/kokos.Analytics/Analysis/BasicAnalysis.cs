@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using kokos.WPF.ServerConnect;
+using kokos.Abstractions;
 
-namespace kokos.WPF.Analysis
+namespace kokos.Analytics.Analysis
 {
     public class BasicAnalysis
     {

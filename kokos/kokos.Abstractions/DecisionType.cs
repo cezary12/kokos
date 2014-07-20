@@ -1,5 +1,5 @@
 ﻿
-namespace kokos.WPF.Strategies
+namespace kokos.Abstractions
 {
     public enum DecisionType
     {

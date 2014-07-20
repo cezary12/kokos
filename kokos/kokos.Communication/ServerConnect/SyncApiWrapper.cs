@@ -1,24 +1,24 @@
-﻿using System.Security;
-using kokos.WPF.Security;
-using kokos.WPF.Utils;
+﻿using kokos.Abstractions;
+using kokos.Communication.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security;
 using xAPI.Codes;
 using xAPI.Commands;
 using xAPI.Records;
 using xAPI.Responses;
 using xAPI.Sync;
 
-namespace kokos.WPF.ServerConnect
+namespace kokos.Communication.ServerConnect
 {
     public class SyncApiWrapper
     {
         private static readonly Server Server = Servers.DEMO;
         private SyncAPIConnector _connector;
 
-        public List<SymbolRecord> SymbolRecords { get; private set; } 
+        public List<Symbol> SymbolRecords { get; private set; } 
 
         public static readonly SyncApiWrapper Instance = new SyncApiWrapper();
 
@@ -40,7 +40,14 @@ namespace kokos.WPF.ServerConnect
             var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(_connector, true);
             ThrowIfNotSuccessful(allSymbolsResponse);
 
-            SymbolRecords = new List<SymbolRecord>(allSymbolsResponse.SymbolRecords);
+            SymbolRecords = allSymbolsResponse.SymbolRecords.Select(x => new Symbol
+            {
+                Name = x.Symbol,
+                CategoryName = x.CategoryName,
+                Description = x.Description,
+                Ask = x.Ask,
+                Bid = x.Bid
+            }).ToList();
 
             //var symbolResponse = APICommandFactory.ExecuteSymbolCommand(_connector, "EURUSD", true);
             //ThrowIfNotSuccessful(symbolResponse);
@@ -61,13 +68,13 @@ namespace kokos.WPF.ServerConnect
             ThrowIfNotSuccessful(logoutResponse);
         }
 
-        public List<TickData> LoadData(string symbol, PERIOD_CODE periodCode, DateTime? startDate = null, DateTime? endDate = null, long? ticks = null)
+        public List<TickData> LoadData(string symbol, DataPeriod dataPeriod, DateTime? startDate = null, DateTime? endDate = null, long? ticks = null)
         {
             return TryExecute(() =>
             {
                 var start = startDate == null ? (long?) null : startDate.Value.ToUnixMilliseconds();
                 var end = endDate == null ? (long?) null : endDate.Value.ToUnixMilliseconds();
-
+                var periodCode = MapToPeriodCode(dataPeriod);
                 var chartRangeInfoRecord = new ChartRangeInfoRecord(symbol, periodCode, start, end, ticks);
                 var range = APICommandFactory.ExecuteChartRangeCommand(_connector, chartRangeInfoRecord, true);
 
@@ -77,6 +84,18 @@ namespace kokos.WPF.ServerConnect
 
                 return tickData;
             });
+        }
+
+        private PERIOD_CODE MapToPeriodCode(DataPeriod dataPeriod)
+        {
+            switch (dataPeriod)
+            {
+                case DataPeriod.D1: return PERIOD_CODE.PERIOD_D1;
+                case DataPeriod.M5: return PERIOD_CODE.PERIOD_M5;
+                case DataPeriod.H1: return PERIOD_CODE.PERIOD_H1;
+                default: 
+                    throw new NotSupportedException("Not supported period type: " + dataPeriod);
+            }
         }
 
         private T TryExecute<T>(Func<T> execute, [CallerMemberName] string callerMemberName = null)

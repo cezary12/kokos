@@ -2,7 +2,7 @@
 using System.Security;
 using System.Text;
 
-namespace kokos.WPF.Security
+namespace kokos.Communication.Extensions
 {
     /// <summary>
     /// http://weblogs.asp.net/jgalloway/archive/2008/04/13/encrypting-passwords-in-a-net-app-config-file.aspx

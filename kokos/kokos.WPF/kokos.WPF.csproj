@@ -107,19 +107,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Analysis\DateValue.cs" />
-    <Compile Include="Analysis\BasicAnalysis.cs" />
     <Compile Include="AttachedProperties\PasswordBoxAssistant.cs" />
     <Compile Include="Converters\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
     <Compile Include="Converters\NegateBooleanConverter.cs" />
-    <Compile Include="Security\PasswordExtensions.cs" />
-    <Compile Include="ServerConnect\SyncApiWrapper.cs" />
-    <Compile Include="ServerConnect\TickData.cs" />
-    <Compile Include="Strategies\Signal.cs" />
-    <Compile Include="Strategies\DecisionType.cs" />
-    <Compile Include="Strategies\SimpleClenow.cs" />
-    <Compile Include="Utils\DateTimeExtensions.cs" />
+    <Compile Include="Extensions\DateValueExtensions.cs" />
     <Compile Include="ViewModel\Base\AReactiveViewModel.cs" />
     <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -167,10 +159,21 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SyncAPIConnector\SyncAPIConnect.csproj">
-      <Project>{e6bc484b-a042-4ca6-9079-e91136d92207}</Project>
-      <Name>SyncAPIConnect</Name>
+    <ProjectReference Include="..\kokos.Abstractions\kokos.Abstractions.csproj">
+      <Project>{3fbb774b-66ff-4465-ae0c-38f101e30ef3}</Project>
+      <Name>kokos.Abstractions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\kokos.Analytics\kokos.Analytics.csproj">
+      <Project>{e4dabb5d-9ce1-45b1-b3a1-a8791d0357dd}</Project>
+      <Name>kokos.Analytics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\kokos.Communication\kokos.Communication.csproj">
+      <Project>{044a378b-b851-44a6-be34-3cb97469896e}</Project>
+      <Name>kokos.Communication</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Security\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

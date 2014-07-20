@@ -1,7 +1,7 @@
 ﻿using System.Security;
 using System.Windows;
 using System.Windows.Controls;
-using kokos.WPF.Security;
+using kokos.Communication.Extensions;
 using MahApps.Metro.Controls;
 
 namespace kokos.WPF.AttachedProperties

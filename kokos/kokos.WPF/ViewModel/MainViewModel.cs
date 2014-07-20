@@ -1,4 +1,4 @@
-﻿using kokos.WPF.ServerConnect;
+﻿using kokos.Communication.ServerConnect;
 using kokos.WPF.ViewModel.Base;
 using ReactiveUI;
 using System;
@@ -91,7 +91,7 @@ namespace kokos.WPF.ViewModel
             _symbols = SyncApiWrapper.Instance.SymbolRecords
                 .Select(symbol => new SymbolViewModel
                 {
-                    Name = symbol.Symbol,
+                    Name = symbol.Name,
                     CategoryName = symbol.CategoryName,
                     Description = symbol.Description,
 

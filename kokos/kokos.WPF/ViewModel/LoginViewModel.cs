@@ -1,6 +1,6 @@
-﻿using kokos.WPF.Properties;
-using kokos.WPF.Security;
-using kokos.WPF.ServerConnect;
+﻿using kokos.Communication.Extensions;
+using kokos.Communication.ServerConnect;
+using kokos.WPF.Properties;
 using kokos.WPF.ViewModel.Base;
 using ReactiveUI;
 using System;

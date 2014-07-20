@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace kokos.WPF.Strategies
+namespace kokos.Abstractions
 {
     [DebuggerDisplay("{GetDebuggerDisplay()}")]
     public class Signal

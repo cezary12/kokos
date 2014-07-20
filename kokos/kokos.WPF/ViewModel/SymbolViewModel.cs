@@ -1,9 +1,10 @@
-﻿using kokos.WPF.Analysis;
-using kokos.WPF.ServerConnect;
-using kokos.WPF.Strategies;
+﻿using kokos.Abstractions;
+using kokos.Analytics.Analysis;
+using kokos.Analytics.Strategies;
+using kokos.Communication.ServerConnect;
+using kokos.WPF.Extensions;
 using kokos.WPF.ViewModel.Base;
 using OxyPlot;
-using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using ReactiveUI;
@@ -12,7 +13,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using xAPI.Codes;
 
 namespace kokos.WPF.ViewModel
 {
@@ -107,7 +107,7 @@ namespace kokos.WPF.ViewModel
 
             _lastLoadedDuration = (parameter as string) ?? _lastLoadedDuration;
 
-            PERIOD_CODE periodCode;
+            DataPeriod periodCode;
             DateTime startDate, endDate;
 
             GetTickDataInfo(ref _lastLoadedDuration, out startDate, out endDate, out periodCode);
@@ -131,17 +131,17 @@ namespace kokos.WPF.ViewModel
         }
 
         private static void GetTickDataInfo(ref string duration, out DateTime startDate, out DateTime endDate,
-            out PERIOD_CODE periodCode)
+            out DataPeriod periodCode)
         {
             if (string.IsNullOrEmpty(duration))
                 duration = "3m";
 
-            periodCode = PERIOD_CODE.PERIOD_D1;
+            periodCode = DataPeriod.D1;
 
             if (duration == "1d")
-                periodCode = PERIOD_CODE.PERIOD_M5;
+                periodCode = DataPeriod.M5;
             else if (duration == "1w")
-                periodCode = PERIOD_CODE.PERIOD_H1;
+                periodCode = DataPeriod.H1;
             //else if (duration == "5y")
             //    periodCode = PERIOD_CODE.PERIOD_W1;
 

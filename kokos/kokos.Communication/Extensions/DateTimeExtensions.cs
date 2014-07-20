@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace kokos.WPF.Utils
+namespace kokos.Communication.Extensions
 {
     public static class DateTimeExtensions
     {

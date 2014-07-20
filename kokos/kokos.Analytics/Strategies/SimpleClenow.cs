@@ -1,13 +1,10 @@
-﻿using System.Security.Cryptography;
-using kokos.WPF.Analysis;
-using kokos.WPF.ServerConnect;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using kokos.Abstractions;
+using kokos.Analytics.Analysis;
 
-namespace kokos.WPF.Strategies
+namespace kokos.Analytics.Strategies
 {
     /// <summary>
     ///• Long entries are only allowed if the 50-day moving average is above the 100-day moving average.

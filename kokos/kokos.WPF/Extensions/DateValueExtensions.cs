@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using kokos.WPF.ServerConnect;
+﻿using kokos.Abstractions;
 using OxyPlot;
 using OxyPlot.Axes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace kokos.WPF.Analysis
+namespace kokos.WPF.Extensions
 {
-    [DebuggerDisplay("{GetDebuggerDisplay()}")]
-    public class DateValue
-    {
-        public DateTime Date { get; set; }
-        public double Value { get; set; }
-
-        private string GetDebuggerDisplay()
-        {
-            return Date.ToShortDateString() + " " + Value.ToString("N4");
-        }
-    }
-
     public static class DateValueExtensions
     {
         public static IEnumerable<DateValue> ToDateValuePoints(this IEnumerable<TickData> ticks, Func<TickData, double> valueSelector)
