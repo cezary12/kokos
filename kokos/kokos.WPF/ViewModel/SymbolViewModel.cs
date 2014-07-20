@@ -169,25 +169,23 @@ namespace kokos.WPF.ViewModel
         {
             Plots.Clear();
 
-            var candles = CreatePlot(Name, new CandleStickSeries
-            {
-                //CandleWidth = 6,
-                Title = Name + " " + duration,
-                Color = OxyColor.FromRgb(57, 58, 59), //black
-                IncreasingFill = OxyColor.FromUInt32(0xCC60A917), //green
-                DecreasingFill = OxyColor.FromUInt32(0xCCFA6800), //orange
-                DataFieldX = "Time",
-                DataFieldHigh = "High",
-                DataFieldLow = "Low",
-                DataFieldOpen = "Open",
-                DataFieldClose = "Close",
-                TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
-                ItemsSource = (Ticks ?? new ObservableCollection<TickData>())
-            });
+            if (Ticks == null || !Ticks.Any())
+                return;
 
-            Plots.Add(new PlotViewModel(candles));
+            var candles = CreatePlot(Name, CreateCandleStickSeries(Name + " " + duration, Ticks));
 
             var dateValues = Ticks.ToDateValuePoints(x => x.Close).ToList();
+
+            var ema = MovingAverage.CalculateEma(Ticks, 22);
+            var channels = MovingAverage.CalculateEmaChannels(Ticks, 22, 60);
+            var lowerChannel = channels.Select(x => new DateValue {Date = x.Date, Value = x.LowerValue}).ToList();
+            var upperChannel = channels.Select(x => new DateValue {Date = x.Date, Value = x.UpperValue}).ToList();
+
+            var plotChannels = CreatePlot("Channels",
+                CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues),
+                CreateLineSeries("EMA 22", OxyColor.FromUInt32(0xCCFA6800), ema),
+                CreateLineSeries("Lower Channel", OxyColor.FromUInt32(0xCCA4C400), lowerChannel),
+                CreateLineSeries("Upper Channel", OxyColor.FromUInt32(0xCC60A917), upperChannel));
 
             var plotMa = CreatePlot("Moving Average",
                 CreateLineSeries("Close Price", OxyColor.FromUInt32(0xCCF0A30A), dateValues),
@@ -202,6 +200,8 @@ namespace kokos.WPF.ViewModel
             var returns = CreatePlot("Returns", "P4",
                 CreateTwoColorLineSeries("Annualized Returns", OxyColor.FromUInt32(0xCC60A917), OxyColor.FromUInt32(0xCCFA6800), CalculateReturns(dateValues)));
 
+            Plots.Add(new PlotViewModel(candles));
+            Plots.Add(new PlotViewModel(plotChannels));
             Plots.Add(new PlotViewModel(plotMa));
             Plots.Add(new PlotViewModel(plotMinMax));
             Plots.Add(new PlotViewModel(returns));
@@ -266,7 +266,26 @@ namespace kokos.WPF.ViewModel
             return CreatePlot(title, "N4", lineSeries);
         }
 
-        private LineSeries CreateLineSeries(string title, OxyColor color, IEnumerable<DateValue> dateValues)
+        private static CandleStickSeries CreateCandleStickSeries(string title, IEnumerable<TickData> ticks)
+        {
+            return new CandleStickSeries
+            {
+                //CandleWidth = 6,
+                Title = title,
+                Color = OxyColor.FromRgb(57, 58, 59), //black
+                IncreasingFill = OxyColor.FromUInt32(0xCC60A917), //green
+                DecreasingFill = OxyColor.FromUInt32(0xCCFA6800), //orange
+                DataFieldX = "Time",
+                DataFieldHigh = "High",
+                DataFieldLow = "Low",
+                DataFieldOpen = "Open",
+                DataFieldClose = "Close",
+                TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
+                ItemsSource = ticks
+            };
+        }
+
+        private static LineSeries CreateLineSeries(string title, OxyColor color, IEnumerable<DateValue> dateValues)
         {
             var lineSeries = new LineSeries { Title = title, Color = color };
 
@@ -277,7 +296,7 @@ namespace kokos.WPF.ViewModel
             return lineSeries;
         }
 
-        private TwoColorLineSeries CreateTwoColorLineSeries(string title, OxyColor color, OxyColor color2, IEnumerable<DateValue> dateValues)
+        private static TwoColorLineSeries CreateTwoColorLineSeries(string title, OxyColor color, OxyColor color2, IEnumerable<DateValue> dateValues)
         {
             var lineSeries = new TwoColorLineSeries { Title = title, Color = color, Color2 = color2 };
 
