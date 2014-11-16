@@ -74,6 +74,7 @@
                 <PasswordBox Margin="0,5" controls:TextboxHelper.Watermark="Password" Name="PasswordBox"
                              attachedProperties:PasswordBoxAssistant.BindPassword="true"
                              attachedProperties:PasswordBoxAssistant.BoundPassword="{Binding Path=LoginViewModel.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <CheckBox Margin="0,5" Content="demo account" IsChecked="{Binding LoginViewModel.IsDemoAccount}" />
                 <CheckBox Margin="0,5" Content="remember me" IsChecked="{Binding LoginViewModel.RememberLoginData}" />
                 <Button Margin="0,15" Style="{DynamicResource AccentedSquareButtonStyle}" Content="Login" Command="{Binding LoginViewModel.LoginCommand, Mode=OneWay}"/>
             </StackPanel>

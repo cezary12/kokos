@@ -31,6 +31,12 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
+        public bool IsDemoAccount
+        {
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
+        }
+
         public bool IsBusy
         {
             get { return GetValue<bool>(); }
@@ -61,6 +67,7 @@ namespace kokos.WPF.ViewModel
             RememberLoginData = Settings.Default.RememberLoginData;
             Login = Settings.Default.Login;
             Password = Settings.Default.Password.Decrypt().ToSecureString();
+            IsDemoAccount = Settings.Default.IsDemoAccount;
         }
 
         private IObservable<bool> CreateCanExecutePasswordObservable()
@@ -77,20 +84,28 @@ namespace kokos.WPF.ViewModel
         {
             IsBusy = true;
 
-            await Task
-                .Run(() => SyncApiWrapper.Instance.Login(Login, Password))
-                .ContinueWith(x =>
-                {
-                    Settings.Default.RememberLoginData = RememberLoginData;
-                    Settings.Default.Login = RememberLoginData ? Login : "";
-                    Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
-                    Settings.Default.Save();
-                });
+            try
+            {
+                await Task
+                    .Run(() => SyncApiWrapper.Instance.Login(Login, Password, IsDemoAccount))
+                    .ContinueWith(x =>
+                    {
+                        Settings.Default.RememberLoginData = RememberLoginData;
+                        Settings.Default.Login = RememberLoginData ? Login : "";
+                        Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
+                        Settings.Default.IsDemoAccount = RememberLoginData && IsDemoAccount;
 
-            _executeOnLogging();
+                        Settings.Default.Save();
+                    });
 
-            IsBusy = false;
-            IsLoggedIn = true;
+                _executeOnLogging();
+
+            }
+            finally
+            {
+                IsBusy = false;
+                IsLoggedIn = true;
+            }
 
             return true;
         }

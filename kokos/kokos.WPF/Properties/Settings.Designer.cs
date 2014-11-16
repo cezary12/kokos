@@ -58,5 +58,17 @@ namespace kokos.WPF.Properties {
                 this["RememberLoginData"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsDemoAccount {
+            get {
+                return ((bool)(this["IsDemoAccount"]));
+            }
+            set {
+                this["IsDemoAccount"] = value;
+            }
+        }
     }
 }

@@ -15,7 +15,12 @@ namespace kokos.Communication.ServerConnect
 {
     public class SyncApiWrapper
     {
-        private static readonly Server Server = Servers.DEMO;
+        private static readonly Server ServerDemo = Servers.DEMO;
+        private static readonly Server ServerReal = Servers.REAL;
+
+        private const string AppId = "";
+        private const string AppName = "";
+
         private SyncAPIConnector _connector;
 
         public List<Symbol> SymbolRecords { get; private set; } 
@@ -24,15 +29,17 @@ namespace kokos.Communication.ServerConnect
 
         private string _userId;
         private SecureString _password;
+        private bool _isDemo;
 
         private SyncApiWrapper()
         {
         }
 
-        public void Login(string userId, SecureString password)
+        public void Login(string userId, SecureString password, bool isDemo)
         {
             _userId = userId;
             _password = password;
+            _isDemo = isDemo;
 
             var loginResponse = ConnectToServer();
             ThrowIfNotSuccessful(loginResponse);
@@ -55,8 +62,11 @@ namespace kokos.Communication.ServerConnect
 
         private LoginResponse ConnectToServer()
         {
-            _connector = new SyncAPIConnector(Server);
-            var credentials = new Credentials(_userId, _password.ToInsecureString(), "", "kokos");
+            if (_connector != null)
+                _connector.Disconnect();
+
+            _connector = new SyncAPIConnector(_isDemo ? ServerDemo : ServerReal);
+            var credentials = new Credentials(_userId, _password.ToInsecureString(), AppId, AppName);
             var loginResponse = APICommandFactory.ExecuteLoginCommand(_connector, credentials, true);
 
             return loginResponse;
@@ -111,9 +121,6 @@ namespace kokos.Communication.ServerConnect
                 catch (Exception ex)
                 {
                     lastException = ex;
-
-                    _connector.Dispose();
-                    _connector = new SyncAPIConnector(Server);
 
                     var loginResponse = ConnectToServer();
                     ThrowIfNotSuccessful(loginResponse);
