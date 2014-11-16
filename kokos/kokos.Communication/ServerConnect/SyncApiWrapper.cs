@@ -131,7 +131,7 @@ namespace kokos.Communication.ServerConnect
             throw new Exception("Unable to execute function " + callerMemberName, lastException);
         }
 
-        private void ThrowIfNotSuccessful(BaseResponse response, [CallerMemberName] string callerMemberName = null)
+        private static void ThrowIfNotSuccessful(BaseResponse response, [CallerMemberName] string callerMemberName = null)
         {
             if (response.Status != true)
                 throw new Exception("Error while executing " + callerMemberName);

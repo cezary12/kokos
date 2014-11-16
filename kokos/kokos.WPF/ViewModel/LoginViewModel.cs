@@ -100,11 +100,12 @@ namespace kokos.WPF.ViewModel
 
                 _executeOnLogging();
 
+                IsBusy = false;
+                IsLoggedIn = true;
             }
             finally
             {
                 IsBusy = false;
-                IsLoggedIn = true;
             }
 
             return true;
