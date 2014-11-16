@@ -4,7 +4,7 @@
                       xmlns:viewModel="clr-namespace:kokos.WPF.ViewModel"
                       xmlns:converters="clr-namespace:kokos.WPF.Converters"
                       xmlns:attachedProperties="clr-namespace:kokos.WPF.AttachedProperties"
-                      xmlns:oxy="http://oxyplot.codeplex.com"
+                      xmlns:oxy="http://oxyplot.org/wpf"
                       x:Class="kokos.WPF.MainWindow"
                       Title="kokos 0.1" Height="800" Width="960">
     <controls:MetroWindow.Resources>
