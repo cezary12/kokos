@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E6579243-3960-4976-8E7A-2A627628BC92}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>xAPI</RootNamespace>
+    <AssemblyName>API</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="API.cs" />
+    <Compile Include="Codes\APICode.cs" />
+    <Compile Include="Codes\MarginMode.cs" />
+    <Compile Include="Codes\PeriodCode.cs" />
+    <Compile Include="Codes\ProfitMode.cs" />
+    <Compile Include="Codes\CashOperationType.cs" />
+    <Compile Include="Codes\RecordType.cs" />
+    <Compile Include="Codes\RequestStatus.cs" />
+    <Compile Include="Codes\Side.cs" />
+    <Compile Include="Codes\StreamingTradeType.cs" />
+    <Compile Include="Codes\TradeState.cs" />
+    <Compile Include="Codes\TradeType.cs" />
+    <Compile Include="Commands\ReqRes\AddOrderCommand.cs" />
+    <Compile Include="Commands\ReqRes\ClosePositionsCommand.cs" />
+    <Compile Include="Commands\ReqRes\ClosePositionCommand.cs" />
+    <Compile Include="Commands\ReqRes\DeletePendingCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetAllSymbolsCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetCalendarCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetCandlesCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetCommissionDefCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetAccountInfoCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetIbsHistoryCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetAccountIndicatorsCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetMarginTradeCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetNewsCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetOrderStatusCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetProfitCalculationCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetStepRulesCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetSymbolCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetTickPricesCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetTradeRecordsCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetTradesCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetCashOperationsHistoryCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetTradesHistoryCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetTradingHoursCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetVersionCommand.cs" />
+    <Compile Include="Commands\ReqRes\LoginCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetServerTimeCommand.cs" />
+    <Compile Include="Commands\ReqRes\LogoutCommand.cs" />
+    <Compile Include="Commands\ReqRes\ModifyPendingCommand.cs" />
+    <Compile Include="Commands\ReqRes\ModifyPositionCommand.cs" />
+    <Compile Include="Commands\ReqRes\PingCommand.cs" />
+    <Compile Include="Commands\Streaming\APIStreamingStopCommand.cs" />
+    <Compile Include="Commands\Streaming\APIStreamingCommand.cs" />
+    <Compile Include="Commands\Streaming\StopTrades.cs" />
+    <Compile Include="Commands\Streaming\GetTrades.cs" />
+    <Compile Include="Commands\Streaming\StopTickPrices.cs" />
+    <Compile Include="Commands\Streaming\GetTickPrices.cs" />
+    <Compile Include="Commands\Streaming\StopProfits.cs" />
+    <Compile Include="Commands\Streaming\GetProfits.cs" />
+    <Compile Include="Commands\Streaming\StopOrderStatus.cs" />
+    <Compile Include="Commands\Streaming\GetOrderStatus.cs" />
+    <Compile Include="Commands\Streaming\StopNews.cs" />
+    <Compile Include="Commands\Streaming\GetNews.cs" />
+    <Compile Include="Commands\Streaming\StopKeepAlive.cs" />
+    <Compile Include="Commands\Streaming\GetKeepAlive.cs" />
+    <Compile Include="Commands\Streaming\StopCandles.cs" />
+    <Compile Include="Commands\Streaming\GetCandles.cs" />
+    <Compile Include="Commands\Streaming\GetAccountIndicators.cs" />
+    <Compile Include="Commands\Streaming\StopAccountIndicators.cs" />
+    <Compile Include="Connection\AsyncYAMIConnector.cs" />
+    <Compile Include="Commands\ReqRes\APICommand.cs" />
+    <Compile Include="Connection\LoginContext.cs" />
+    <Compile Include="Connection\Server.cs" />
+    <Compile Include="Connection\SpecificServer.cs" />
+    <Compile Include="APISync.cs" />
+    <Compile Include="Errors\APICommandConstructionException.cs" />
+    <Compile Include="Errors\APICommunicationException.cs" />
+    <Compile Include="Errors\APIException.cs" />
+    <Compile Include="Errors\APIReplyParseException.cs" />
+    <Compile Include="Errors\APIErrorResponseException.cs" />
+    <Compile Include="Interfaces\IAsyncConnector.cs" />
+    <Compile Include="Interfaces\IConnector.cs" />
+    <Compile Include="Interfaces\ISyncConnector.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Records\CalendarRecord.cs" />
+    <Compile Include="Records\CandleRecord.cs" />
+    <Compile Include="Records\StreamingErrorRecord.cs" />
+    <Compile Include="Records\HoursRecord.cs" />
+    <Compile Include="Records\IbRecord.cs" />
+    <Compile Include="Records\KeepAliveRecord.cs" />
+    <Compile Include="Records\NewsRecord.cs" />
+    <Compile Include="Records\NewsTopicRecord.cs" />
+    <Compile Include="Records\OrderStatusRecord.cs" />
+    <Compile Include="Records\ProfitRecord.cs" />
+    <Compile Include="Records\StepRecord.cs" />
+    <Compile Include="Records\StepRuleRecord.cs" />
+    <Compile Include="Records\StreamingCandleRecord.cs" />
+    <Compile Include="Records\StreamingTradeRecord.cs" />
+    <Compile Include="Records\SymbolRecord.cs" />
+    <Compile Include="Records\TickRecord.cs" />
+    <Compile Include="Records\CashOperationRecord.cs" />
+    <Compile Include="Records\TradeRecord.cs" />
+    <Compile Include="Records\TradingHoursRecord.cs" />
+    <Compile Include="Responses\AddOrderResponse.cs" />
+    <Compile Include="Responses\APIResponse.cs" />
+    <Compile Include="Responses\ClosePositionsResponse.cs" />
+    <Compile Include="Responses\ClosePositionResponse.cs" />
+    <Compile Include="Responses\GetCommissionDefResponse.cs" />
+    <Compile Include="Responses\GetCashOperationsHistoryResponse.cs" />
+    <Compile Include="Responses\ModifyPositionResponse.cs" />
+    <Compile Include="Responses\ModifyPendingResponse.cs" />
+    <Compile Include="Responses\DeletePendingResponse.cs" />
+    <Compile Include="Responses\GetAllSymbolsResponse.cs" />
+    <Compile Include="Responses\GetCalendarResponse.cs" />
+    <Compile Include="Responses\GetCandlesResponse.cs" />
+    <Compile Include="Responses\GetCurrentUserDataResponse.cs" />
+    <Compile Include="Responses\GetIbsHistoryResponse.cs" />
+    <Compile Include="Responses\GetMarginLevelResponse.cs" />
+    <Compile Include="Responses\GetMarginTradeResponse.cs" />
+    <Compile Include="Responses\GetNewsResponse.cs" />
+    <Compile Include="Responses\GetOrderStatusResponse.cs" />
+    <Compile Include="Responses\GetProfitCalculationResponse.cs" />
+    <Compile Include="Responses\GetStepRulesResponse.cs" />
+    <Compile Include="Responses\GetSymbolResponse.cs" />
+    <Compile Include="Responses\GetTradeRecordsResponse.cs" />
+    <Compile Include="Responses\GetTradesHistoryResponse.cs" />
+    <Compile Include="Responses\GetTradesResponse.cs" />
+    <Compile Include="Responses\GetTradingHoursResponse.cs" />
+    <Compile Include="Responses\GetVersionResponse.cs" />
+    <Compile Include="Responses\LoginResponse.cs" />
+    <Compile Include="Responses\GetServerTimeResponse.cs" />
+    <Compile Include="Commands\Streaming\APIStreamingSubscribeCommand.cs" />
+    <Compile Include="Records\APIRecord.cs" />
+    <Compile Include="Records\IndicatorsRecord.cs" />
+    <Compile Include="Responses\LogoutResponse.cs" />
+    <Compile Include="Responses\PingResponse.cs" />
+    <Compile Include="Responses\GetTickPricesResponse.cs" />
+    <Compile Include="Utils\Credentials.cs" />
+    <Compile Include="Utils\Servers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Streaming\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\YAMI\Inspirel.YAMI.csproj">
+      <Project>{036104e8-049c-469e-b1c1-d866e3ac5856}</Project>
+      <Name>Inspirel.YAMI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

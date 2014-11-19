@@ -280,8 +280,8 @@ namespace kokos.WPF.ViewModel
                 DataFieldLow = "Low",
                 DataFieldOpen = "Open",
                 DataFieldClose = "Close",
-                TrackerFormatString = "{1:MM/dd/yyyy HH:mm:ss}\nOpen: {4:N4}\nHigh: {2:N4}\nLow: {3:N4}\nClose: {5:N4}",
-                ItemsSource = ticks
+                TrackerFormatString = "{0}\n{1:MM/dd/yyyy HH:mm:ss}\nOpen: {5:N4}\nHigh: {3:N4}\nLow: {4:N4}\nClose: {6:N4}",
+                ItemsSource = ticks,
             };
         }
 
@@ -305,6 +305,17 @@ namespace kokos.WPF.ViewModel
             lineSeries.Points.AddRange(dataPoints);
 
             return lineSeries;
+        }
+
+        private static AreaSeries CreateAreaSeries(string title, OxyColor fill, OxyColor contour,
+            IEnumerable<DateValue> dateValues)
+        {
+            return null;
+        }
+
+        private static PlotModel CreatePlotModelWithTwoPlotAreas(string title, string xaxisStringFormat)
+        {
+            return null;
         }
 
         private static PlotModel CreatePlotModel(string title, string xaxisStringFormat)

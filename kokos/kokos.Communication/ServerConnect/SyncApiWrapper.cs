@@ -5,23 +5,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
+using xAPI;
 using xAPI.Codes;
 using xAPI.Commands;
+using xAPI.Connection;
 using xAPI.Records;
 using xAPI.Responses;
-using xAPI.Sync;
+using xAPI.Utils;
 
 namespace kokos.Communication.ServerConnect
 {
     public class SyncApiWrapper
     {
         private static readonly Server ServerDemo = Servers.DEMO;
-        private static readonly Server ServerReal = Servers.REAL;
+        private static readonly Server ServerReal = Servers.DEMO;
 
-        private const string AppId = "";
-        private const string AppName = "";
+        private const string AppId = "testid";
+        private const string AppName = "testname";
 
-        private SyncAPIConnector _connector;
+        private APISync _connector;
 
         public List<Symbol> SymbolRecords { get; private set; } 
 
@@ -44,7 +46,7 @@ namespace kokos.Communication.ServerConnect
             var loginResponse = ConnectToServer();
             ThrowIfNotSuccessful(loginResponse);
 
-            var allSymbolsResponse = APICommandFactory.ExecuteAllSymbolsCommand(_connector, true);
+            var allSymbolsResponse = _connector.GetAllSymbols();
             ThrowIfNotSuccessful(allSymbolsResponse);
 
             SymbolRecords = allSymbolsResponse.SymbolRecords.Select(x => new Symbol
@@ -63,46 +65,45 @@ namespace kokos.Communication.ServerConnect
         private LoginResponse ConnectToServer()
         {
             if (_connector != null)
-                _connector.Disconnect();
+                _connector.Logout();
 
-            _connector = new SyncAPIConnector(_isDemo ? ServerDemo : ServerReal);
+            _connector = new APISync(_isDemo ? ServerDemo : ServerReal);
             var credentials = new Credentials(_userId, _password.ToInsecureString(), AppId, AppName);
-            var loginResponse = APICommandFactory.ExecuteLoginCommand(_connector, credentials, true);
+            var loginResponse = _connector.Login(credentials);
 
             return loginResponse;
         }
 
         public void Logout()
         {
-            var logoutResponse = APICommandFactory.ExecuteLogoutCommand(_connector);
+            var logoutResponse = _connector.Logout();
             ThrowIfNotSuccessful(logoutResponse);
         }
 
-        public List<TickData> LoadData(string symbol, DataPeriod dataPeriod, DateTime? startDate = null, DateTime? endDate = null, long? ticks = null)
+        public List<TickData> LoadData(string symbol, DataPeriod dataPeriod, DateTime startDate, DateTime endDate, long? ticks = null)
         {
             return TryExecute(() =>
             {
-                var start = startDate == null ? (long?) null : startDate.Value.ToUnixMilliseconds();
-                var end = endDate == null ? (long?) null : endDate.Value.ToUnixMilliseconds();
+                var start = startDate.ToUnixMilliseconds();
+                var end = endDate.ToUnixMilliseconds();
                 var periodCode = MapToPeriodCode(dataPeriod);
-                var chartRangeInfoRecord = new ChartRangeInfoRecord(symbol, periodCode, start, end, ticks);
-                var range = APICommandFactory.ExecuteChartRangeCommand(_connector, chartRangeInfoRecord, true);
+                var range = _connector.GetCandles(periodCode, symbol, start, end);
 
                 ThrowIfNotSuccessful(range);
 
-                var tickData = range.RateInfos.Convert(range.Digits ?? 1).ToList();
+                var tickData = range.Candles.Convert().ToList();
 
                 return tickData;
             });
         }
 
-        private PERIOD_CODE MapToPeriodCode(DataPeriod dataPeriod)
+        private static PeriodCode MapToPeriodCode(DataPeriod dataPeriod)
         {
             switch (dataPeriod)
             {
-                case DataPeriod.D1: return PERIOD_CODE.PERIOD_D1;
-                case DataPeriod.M5: return PERIOD_CODE.PERIOD_M5;
-                case DataPeriod.H1: return PERIOD_CODE.PERIOD_H1;
+                case DataPeriod.D1: return PeriodCode.Days(1);
+                case DataPeriod.M5: return PeriodCode.Minutes(5);
+                case DataPeriod.H1: return PeriodCode.Hours(1);
                 default: 
                     throw new NotSupportedException("Not supported period type: " + dataPeriod);
             }
@@ -131,7 +132,7 @@ namespace kokos.Communication.ServerConnect
             throw new Exception("Unable to execute function " + callerMemberName, lastException);
         }
 
-        private static void ThrowIfNotSuccessful(BaseResponse response, [CallerMemberName] string callerMemberName = null)
+        private static void ThrowIfNotSuccessful(APIResponse response, [CallerMemberName] string callerMemberName = null)
         {
             if (response.Status != true)
                 throw new Exception("Error while executing " + callerMemberName);

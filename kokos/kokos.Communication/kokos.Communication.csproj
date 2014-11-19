@@ -47,13 +47,13 @@
     <Compile Include="ServerConnect\SyncApiWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\3rd Party\xtb\API\xAPI.csproj">
+      <Project>{e6579243-3960-4976-8e7a-2a627628bc92}</Project>
+      <Name>xAPI</Name>
+    </ProjectReference>
     <ProjectReference Include="..\kokos.Abstractions\kokos.Abstractions.csproj">
       <Project>{3fbb774b-66ff-4465-ae0c-38f101e30ef3}</Project>
       <Name>kokos.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SyncAPIConnector\SyncAPIConnect.csproj">
-      <Project>{e6bc484b-a042-4ca6-9079-e91136d92207}</Project>
-      <Name>SyncAPIConnect</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

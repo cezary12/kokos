@@ -8,7 +8,6 @@ namespace kokos.Abstractions
         public double High { get; private set; }
         public double Low { get; private set; }
         public double Close { get; private set; }
-        public double? Vol { get; private set; }
 
         public DateTime Time { get; private set; }
 
@@ -17,13 +16,12 @@ namespace kokos.Abstractions
             get { return Time.ToShortDateString() + " " + Time.ToShortTimeString(); }
         }
 
-        public TickData(double open, double high, double low, double close, double? volume, DateTime time)
+        public TickData(double open, double high, double low, double close, DateTime time)
         {
             Open = open;
             High = high;
             Low = low;
             Close = close;
-            Vol = volume;
             Time = time;
         }
     }
