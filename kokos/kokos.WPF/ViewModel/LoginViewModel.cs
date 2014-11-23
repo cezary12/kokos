@@ -11,8 +11,6 @@ namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AReactiveViewModel
     {
-        private readonly Action _executeOnLogging;
-
         public string Login
         {
             get { return GetValue<string>(); }
@@ -52,14 +50,12 @@ namespace kokos.WPF.ViewModel
         public IReactiveCommand LoginCommand { get; private set; }
         public IReactiveCommand LogoutCommand { get; private set; }
 
-        public LoginViewModel(Action executeOnLogging)
+        public LoginViewModel()
         {
             if (IsInDesignMode)
             {
                 IsLoggedIn = true;
             }
-
-            _executeOnLogging = executeOnLogging;
 
             LoginCommand = ReactiveCommand.CreateAsyncTask(CreateCanExecutePasswordObservable(), ExecuteLoginAsync, RxApp.MainThreadScheduler);
             LogoutCommand = ReactiveCommand.CreateAsyncTask(ExecuteLogoutAsync, RxApp.MainThreadScheduler);
@@ -97,8 +93,6 @@ namespace kokos.WPF.ViewModel
 
                         Settings.Default.Save();
                     });
-
-                _executeOnLogging();
 
                 IsBusy = false;
                 IsLoggedIn = true;

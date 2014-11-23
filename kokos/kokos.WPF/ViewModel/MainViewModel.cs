@@ -33,12 +33,14 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public MainViewModel()
+        public MainViewModel(LoginViewModel loginViewModel)
         {
             RxApp.MainThreadScheduler = new DispatcherScheduler(Application.Current.Dispatcher);
 
-            LoginViewModel = new LoginViewModel(PopulateSymbols);
+            LoginViewModel = loginViewModel;
             Symbols = new ObservableCollection<SymbolViewModel>();
+
+            LoginViewModel.ObservableForProperty(x => x.IsLoggedIn).Subscribe(x => PopulateSymbols());
 
             SearchSymbolCommand = ReactiveCommand.CreateAsyncTask(ExecuteSearchSymbol, RxApp.MainThreadScheduler);
 
