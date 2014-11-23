@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Autofac;
 using Autofac.Core;
+using kokos.Communication.ServerConnect;
 using kokos.WPF.ViewModel;
 
 namespace kokos.WPF
@@ -28,6 +29,8 @@ namespace kokos.WPF
             builder.RegisterAssemblyTypes(assembly)
                    .AsSelf()
                    .AsImplementedInterfaces();
+            builder.RegisterType<SyncApiWrapper>().AsSelf().SingleInstance();
+
             var container = builder.Build();
 
             var window = container.Resolve<MainWindow>();

@@ -7,9 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Security;
 using xAPI;
 using xAPI.Codes;
-using xAPI.Commands;
 using xAPI.Connection;
-using xAPI.Records;
 using xAPI.Responses;
 using xAPI.Utils;
 
@@ -27,15 +25,9 @@ namespace kokos.Communication.ServerConnect
 
         public List<Symbol> SymbolRecords { get; private set; } 
 
-        public static readonly SyncApiWrapper Instance = new SyncApiWrapper();
-
         private string _userId;
         private SecureString _password;
         private bool _isDemo;
-
-        private SyncApiWrapper()
-        {
-        }
 
         public void Login(string userId, SecureString password, bool isDemo)
         {

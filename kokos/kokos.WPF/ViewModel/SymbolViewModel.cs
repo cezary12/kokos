@@ -19,6 +19,7 @@ namespace kokos.WPF.ViewModel
     public class SymbolViewModel : AReactiveViewModel
     {
         private static string _lastLoadedDuration;
+        private readonly SyncApiWrapper _syncApiWrapper;
 
         public string StatusText
         {
@@ -84,8 +85,9 @@ namespace kokos.WPF.ViewModel
 
         public IReactiveCommand LoadTickData { get; private set; }
 
-        public SymbolViewModel()
+        public SymbolViewModel(SyncApiWrapper syncApiWrapper)
         {
+            _syncApiWrapper = syncApiWrapper;
             StatusText = "Ready";
 
             if (IsInDesignMode)
@@ -115,7 +117,7 @@ namespace kokos.WPF.ViewModel
 
             var tickCount = 1000000;
 
-            var ticks = await Task.Run(() => SyncApiWrapper.Instance.LoadData(Name, periodCode, startDate, endDate, tickCount));
+            var ticks = await Task.Run(() => _syncApiWrapper.LoadData(Name, periodCode, startDate, endDate, tickCount));
 
             Ticks.Clear();
             foreach (var tick in ticks)

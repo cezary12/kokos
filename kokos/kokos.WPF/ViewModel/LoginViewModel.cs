@@ -11,6 +11,7 @@ namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AReactiveViewModel
     {
+        private readonly SyncApiWrapper _syncApiWrapper;
         public string Login
         {
             get { return GetValue<string>(); }
@@ -50,8 +51,10 @@ namespace kokos.WPF.ViewModel
         public IReactiveCommand LoginCommand { get; private set; }
         public IReactiveCommand LogoutCommand { get; private set; }
 
-        public LoginViewModel()
+        public LoginViewModel(SyncApiWrapper syncApiWrapper)
         {
+            _syncApiWrapper = syncApiWrapper;
+
             if (IsInDesignMode)
             {
                 IsLoggedIn = true;
@@ -83,7 +86,7 @@ namespace kokos.WPF.ViewModel
             try
             {
                 await Task
-                    .Run(() => SyncApiWrapper.Instance.Login(Login, Password, IsDemoAccount))
+                    .Run(() => _syncApiWrapper.Login(Login, Password, IsDemoAccount))
                     .ContinueWith(x =>
                     {
                         Settings.Default.RememberLoginData = RememberLoginData;
@@ -109,7 +112,7 @@ namespace kokos.WPF.ViewModel
         {
             IsLoggedIn = false;
             IsBusy = true;
-            await Task.Run(() => SyncApiWrapper.Instance.Logout());
+            await Task.Run(() => _syncApiWrapper.Logout());
             IsBusy = false;
 
             return true;
