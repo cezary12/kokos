@@ -12,7 +12,12 @@ namespace xAPI.Utils
         /// <summary>
         /// Demo port set.
         /// </summary>
-        private static int DEMO_PORT = 5146;
+        private static int DEMO_PORT = 5124;
+
+        /// <summary>
+        /// Real port set.
+        /// </summary>
+        private static int REAL_PORT = 5112;
 
         /// <summary>
         /// List of all available addresses.
@@ -45,6 +50,17 @@ namespace xAPI.Utils
         }
 
         /// <summary>
+        /// xAPI Real Server.
+        /// </summary>
+        public static SpecificServer REAL
+        {
+            get
+            {
+                return REAL_SERVERS[0];
+            }
+        }
+
+        /// <summary>
         /// List of all demo servers.
         /// </summary>
         public static List<SpecificServer> DEMO_SERVERS
@@ -64,6 +80,29 @@ namespace xAPI.Utils
                 }
 
                 return demoServers;
+            }
+        }
+
+        /// <summary>
+        /// List of all real servers.
+        /// </summary>
+        public static List<SpecificServer> REAL_SERVERS
+        {
+            get
+            {
+                if (realServers == null)
+                {
+                    realServers = new List<SpecificServer>();
+
+                    foreach (ApiAddress address in ADDRESSES)
+                    {
+                        realServers.Add(new SpecificServer(address.Address, REAL_PORT, true, address.Name + " REAL SSL"));
+                    }
+
+                    realServers.Shuffle();
+                }
+
+                return realServers;
             }
         }
 

@@ -62,6 +62,7 @@
     <Compile Include="Commands\ReqRes\DeletePendingCommand.cs" />
     <Compile Include="Commands\ReqRes\GetAllSymbolsCommand.cs" />
     <Compile Include="Commands\ReqRes\GetCalendarCommand.cs" />
+    <Compile Include="Commands\ReqRes\GetNCandlesCommand.cs" />
     <Compile Include="Commands\ReqRes\GetCandlesCommand.cs" />
     <Compile Include="Commands\ReqRes\GetCommissionDefCommand.cs" />
     <Compile Include="Commands\ReqRes\GetAccountInfoCommand.cs" />

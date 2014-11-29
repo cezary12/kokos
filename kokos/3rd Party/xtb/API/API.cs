@@ -19,6 +19,8 @@ namespace xAPI
 {
     public class API
     {
+        public const string VERSION = "3.1.2";
+
         #region Events
 
         /// <summary>
@@ -233,6 +235,19 @@ namespace xAPI
         public Task<GetCandlesResponse> GetCandles(PeriodCode period, string symbol, long start, long end = 0)
         {
             return connector.Execute<GetCandlesResponse>(new GetCandlesCommand(period, symbol, start, end), (packet) => new GetCandlesResponse(packet));
+        }
+
+        /// <summary>
+        /// Returns the given number of candles data before the end date.
+        /// </summary>
+        /// <param name="period">Requested candles interval in minutes</param>
+        /// <param name="symbol">Name of candle symbol</param>
+        /// <param name="end">Defines the end timestamp of candles block (rounded down to the nearest interval)</param>
+        /// <param name="number">Number of requested candles</param>
+        /// <returns>GetCandles response task</returns>
+        public Task<GetCandlesResponse> GetNCandles(PeriodCode period, string symbol, long end, long number)
+        {
+            return connector.Execute<GetCandlesResponse>(new GetNCandlesCommand(period, symbol, end, number), (packet) => new GetCandlesResponse(packet));
         }
 
         /// <summary>

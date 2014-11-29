@@ -16,6 +16,8 @@ namespace xAPI.Commands.ReqRes
         {
             base.AddField("userId", credentials.Login);
             base.AddField("password", credentials.Password);
+            base.AddField("type", "dotNET");
+            base.AddField("version", API.VERSION);
         }
     }
 }

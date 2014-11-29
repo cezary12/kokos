@@ -150,6 +150,21 @@ namespace xAPI
         }
 
         /// <summary>
+        /// Returns candles data between given start and end dates. 
+        /// If the chosen period is greater than 1 minute and the end date is not set, the last candle returned by the API can change 
+        /// until the end of the period (the candle is being automatically updated every minute).
+        /// </summary>
+        /// <param name="period">Requested candles interval in minutes</param>
+        /// <param name="symbol">Name of candle symbol</param>
+        /// <param name="end">Defines the end timestamp of candles block (rounded down to the nearest interval)</param>
+        /// <param name="number">Number of requested candles</param>
+        /// <returns>GetCandles response task</returns>
+        new public GetCandlesResponse GetNCandles(PeriodCode period, string symbol, long end, long number)
+        {
+            return SyncCommandExecuteWrapper<GetCandlesResponse>(base.GetNCandles(period, symbol, end, number));
+        }
+
+        /// <summary>
         /// Returns calculation of commission and rate of exchange. 
         /// The value is calculated as expected value and therefore might not be perfectly accurate.
         /// </summary>
