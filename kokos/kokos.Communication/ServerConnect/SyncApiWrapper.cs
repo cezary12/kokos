@@ -16,7 +16,8 @@ namespace kokos.Communication.ServerConnect
     public class SyncApiWrapper
     {
         private static readonly Server ServerDemo = Servers.DEMO;
-        private static readonly Server ServerReal = Servers.REAL;
+#warning no Servers.REAL
+        private static readonly Server ServerReal = Servers.DEMO;
 
         private const string AppId = "testid";
         private const string AppName = "testname";
