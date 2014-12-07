@@ -29,7 +29,7 @@ namespace kokos.WPF
             builder.RegisterAssemblyTypes(assembly)
                    .AsSelf()
                    .AsImplementedInterfaces();
-            builder.RegisterType<SyncApiWrapper>().AsSelf().SingleInstance();
+            builder.RegisterType<XtbWrapper>().AsSelf().SingleInstance();
 
             var container = builder.Build();
 

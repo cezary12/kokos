@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security;
+using System.Threading.Tasks;
 using xAPI;
 using xAPI.Codes;
 using xAPI.Connection;
@@ -13,7 +14,7 @@ using xAPI.Utils;
 
 namespace kokos.Communication.ServerConnect
 {
-    public class SyncApiWrapper
+    public class XtbWrapper
     {
         private static readonly Server ServerDemo = Servers.DEMO;
 #warning no Servers.REAL
@@ -22,7 +23,7 @@ namespace kokos.Communication.ServerConnect
         private const string AppId = "testid";
         private const string AppName = "testname";
 
-        private APISync _connector;
+        private API _connector;
 
         public List<Symbol> SymbolRecords { get; private set; } 
 
@@ -30,16 +31,16 @@ namespace kokos.Communication.ServerConnect
         private SecureString _password;
         private bool _isDemo;
 
-        public void Login(string userId, SecureString password, bool isDemo)
+        public async Task<bool> Login(string userId, SecureString password, bool isDemo)
         {
             _userId = userId;
             _password = password;
             _isDemo = isDemo;
 
-            var loginResponse = ConnectToServer();
+            var loginResponse = await ConnectToServer();
             ThrowIfNotSuccessful(loginResponse);
 
-            var allSymbolsResponse = _connector.GetAllSymbols();
+            var allSymbolsResponse = await _connector.GetAllSymbols();
             ThrowIfNotSuccessful(allSymbolsResponse);
 
             SymbolRecords = allSymbolsResponse.SymbolRecords.Select(x => new Symbol
@@ -51,43 +52,43 @@ namespace kokos.Communication.ServerConnect
                 Bid = x.Bid
             }).ToList();
 
+            return true;
+
             //var symbolResponse = APICommandFactory.ExecuteSymbolCommand(_connector, "EURUSD", true);
             //ThrowIfNotSuccessful(symbolResponse);
         }
 
-        private LoginResponse ConnectToServer()
+        private async Task<LoginResponse> ConnectToServer()
         {
             if (_connector != null)
-                _connector.Logout();
+                await _connector.Logout();
 
             _connector = new APISync(_isDemo ? ServerDemo : ServerReal);
             var credentials = new Credentials(_userId, _password.ToInsecureString(), AppId, AppName);
-            var loginResponse = _connector.Login(credentials);
+            var loginResponse =  await _connector.Login(credentials);
 
             return loginResponse;
         }
 
-        public void Logout()
+        public async Task<bool> Logout()
         {
-            var logoutResponse = _connector.Logout();
+            var logoutResponse = await _connector.Logout();
             ThrowIfNotSuccessful(logoutResponse);
+            return true;
         }
 
-        public List<TickData> LoadData(string symbol, DataPeriod dataPeriod, DateTime startDate, DateTime endDate, long? ticks = null)
+        public async Task<List<TickData>> LoadData(string symbol, DataPeriod dataPeriod, DateTime startDate, DateTime endDate)
         {
-            return TryExecute(() =>
-            {
-                var start = startDate.ToUnixMilliseconds();
-                var end = endDate.ToUnixMilliseconds();
-                var periodCode = MapToPeriodCode(dataPeriod);
-                var range = _connector.GetCandles(periodCode, symbol, start, end);
+            var start = startDate.ToUnixMilliseconds();
+            var end = endDate.ToUnixMilliseconds();
+            var periodCode = MapToPeriodCode(dataPeriod);
+            var range = await _connector.GetCandles(periodCode, symbol, start, end);
 
-                ThrowIfNotSuccessful(range);
+            ThrowIfNotSuccessful(range);
 
-                var tickData = range.Candles.Convert().ToList();
+            var tickData = range.Candles.Convert().ToList();
 
-                return tickData;
-            });
+            return tickData;
         }
 
         private static PeriodCode MapToPeriodCode(DataPeriod dataPeriod)
@@ -102,7 +103,7 @@ namespace kokos.Communication.ServerConnect
             }
         }
 
-        private T TryExecute<T>(Func<T> execute, [CallerMemberName] string callerMemberName = null)
+        private async Task<T> TryExecute<T>(Func<Task<T>> execute, [CallerMemberName] string callerMemberName = null)
         {
             var retry = 0;
             Exception lastException;
@@ -110,15 +111,15 @@ namespace kokos.Communication.ServerConnect
             {
                 try
                 {
-                    return execute();
+                    return await execute();
                 }
                 catch (Exception ex)
                 {
                     lastException = ex;
-
-                    var loginResponse = ConnectToServer();
-                    ThrowIfNotSuccessful(loginResponse);
                 }
+
+                var loginResponse = await ConnectToServer();
+                ThrowIfNotSuccessful(loginResponse);
 
             } while (++retry <= 3);
 

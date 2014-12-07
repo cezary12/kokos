@@ -11,7 +11,7 @@ namespace kokos.WPF.ViewModel
 {
     public class LoginViewModel : AReactiveViewModel
     {
-        private readonly SyncApiWrapper _syncApiWrapper;
+        private readonly XtbWrapper _xtbWrapper;
         public string Login
         {
             get { return GetValue<string>(); }
@@ -51,9 +51,9 @@ namespace kokos.WPF.ViewModel
         public IReactiveCommand LoginCommand { get; private set; }
         public IReactiveCommand LogoutCommand { get; private set; }
 
-        public LoginViewModel(SyncApiWrapper syncApiWrapper)
+        public LoginViewModel(XtbWrapper xtbWrapper)
         {
-            _syncApiWrapper = syncApiWrapper;
+            _xtbWrapper = xtbWrapper;
 
             if (IsInDesignMode)
             {
@@ -85,17 +85,14 @@ namespace kokos.WPF.ViewModel
 
             try
             {
-                await Task
-                    .Run(() => _syncApiWrapper.Login(Login, Password, IsDemoAccount))
-                    .ContinueWith(x =>
-                    {
-                        Settings.Default.RememberLoginData = RememberLoginData;
-                        Settings.Default.Login = RememberLoginData ? Login : "";
-                        Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
-                        Settings.Default.IsDemoAccount = RememberLoginData && IsDemoAccount;
+                await _xtbWrapper.Login(Login, Password, IsDemoAccount);
 
-                        Settings.Default.Save();
-                    });
+                Settings.Default.RememberLoginData = RememberLoginData;
+                Settings.Default.Login = RememberLoginData ? Login : "";
+                Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
+                Settings.Default.IsDemoAccount = RememberLoginData && IsDemoAccount;
+
+                Settings.Default.Save();
 
                 IsBusy = false;
                 IsLoggedIn = true;
@@ -112,7 +109,9 @@ namespace kokos.WPF.ViewModel
         {
             IsLoggedIn = false;
             IsBusy = true;
-            await Task.Run(() => _syncApiWrapper.Logout());
+            
+            await _xtbWrapper.Logout();
+
             IsBusy = false;
 
             return true;

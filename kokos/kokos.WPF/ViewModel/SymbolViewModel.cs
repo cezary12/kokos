@@ -19,7 +19,7 @@ namespace kokos.WPF.ViewModel
     public class SymbolViewModel : AReactiveViewModel
     {
         private static string _lastLoadedDuration;
-        private readonly SyncApiWrapper _syncApiWrapper;
+        private readonly XtbWrapper _xtbWrapper;
 
         public string StatusText
         {
@@ -85,9 +85,9 @@ namespace kokos.WPF.ViewModel
 
         public IReactiveCommand LoadTickData { get; private set; }
 
-        public SymbolViewModel(SyncApiWrapper syncApiWrapper)
+        public SymbolViewModel(XtbWrapper xtbWrapper)
         {
-            _syncApiWrapper = syncApiWrapper;
+            _xtbWrapper = xtbWrapper;
             StatusText = "Ready";
 
             if (IsInDesignMode)
@@ -115,9 +115,7 @@ namespace kokos.WPF.ViewModel
             GetTickDataInfo(ref _lastLoadedDuration, out startDate, out endDate, out periodCode);
             Duration = _lastLoadedDuration;
 
-            var tickCount = 1000000;
-
-            var ticks = await Task.Run(() => _syncApiWrapper.LoadData(Name, periodCode, startDate, endDate, tickCount));
+            var ticks = await _xtbWrapper.LoadData(Name, periodCode, startDate, endDate);
 
             Ticks.Clear();
             foreach (var tick in ticks)
@@ -162,7 +160,7 @@ namespace kokos.WPF.ViewModel
             else if (duration == "1w")
                 startDate = endDate.AddDays(-7);
             else
-                startDate = endDate.AddDays(-1);
+                startDate = endDate.AddDays(-3);
 
             startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day);
         }

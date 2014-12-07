@@ -14,7 +14,7 @@ namespace kokos.WPF.ViewModel
 {
     public class MainViewModel : AReactiveViewModel
     {
-        private readonly SyncApiWrapper _syncApiWrapper;
+        private readonly XtbWrapper _xtbWrapper;
 
         public LoginViewModel LoginViewModel { get; private set; }
 
@@ -35,12 +35,12 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public MainViewModel(LoginViewModel loginViewModel, SyncApiWrapper syncApiWrapper)
+        public MainViewModel(LoginViewModel loginViewModel, XtbWrapper xtbWrapper)
         {
             RxApp.MainThreadScheduler = new DispatcherScheduler(Application.Current.Dispatcher);
 
             LoginViewModel = loginViewModel;
-            _syncApiWrapper = syncApiWrapper;
+            _xtbWrapper = xtbWrapper;
 
             Symbols = new ObservableCollection<SymbolViewModel>();
 
@@ -94,8 +94,8 @@ namespace kokos.WPF.ViewModel
 
         private void PopulateSymbols()
         {
-            _symbols = _syncApiWrapper.SymbolRecords
-                .Select(symbol => new SymbolViewModel(_syncApiWrapper)
+            _symbols = _xtbWrapper.SymbolRecords
+                .Select(symbol => new SymbolViewModel(_xtbWrapper)
                 {
                     Name = symbol.Name,
                     CategoryName = symbol.CategoryName,
