@@ -18,7 +18,7 @@ namespace kokos.WPF.ViewModel
 {
     public class SymbolViewModel : AReactiveViewModel
     {
-        private static string _lastLoadedDuration;
+        private static DurationEnum _lastLoadedDuration = DurationEnum.Month3;
         private readonly XtbWrapper _xtbWrapper;
 
         public string StatusText
@@ -29,11 +29,11 @@ namespace kokos.WPF.ViewModel
 
         public string Duration
         {
-            get { return _lastLoadedDuration; }
+            get { return _lastLoadedDuration.ToString(); }
             set
             {
                 SetValue(value);
-                _lastLoadedDuration = value;
+                _lastLoadedDuration = (DurationEnum)Enum.Parse(typeof(DurationEnum), value);
             }
         }
 
@@ -46,13 +46,13 @@ namespace kokos.WPF.ViewModel
         public string Description
         {
             get { return GetValue<string>(); }
-            set { SetValue(value); }
+            private set { SetValue(value); }
         }
 
         public string Name
         {
             get { return GetValue<string>(); }
-            set { SetValue(value); }
+            private set { SetValue(value); }
         }
 
         public double? Bid
@@ -85,21 +85,23 @@ namespace kokos.WPF.ViewModel
 
         public IReactiveCommand LoadTickData { get; private set; }
 
-        public SymbolViewModel(XtbWrapper xtbWrapper)
+        public SymbolViewModel(XtbWrapper xtbWrapper, string name, string description)
         {
             _xtbWrapper = xtbWrapper;
             StatusText = "Ready";
 
+            Name = name;
+            Description = description;
+
             if (IsInDesignMode)
                 IsBusy = true;
 
-            Duration = "3m";
             Plots = new ObservableCollection<PlotViewModel>();
             Ticks = new ObservableCollection<TickData>();
             LoadTickData = ReactiveCommand.CreateAsyncTask(this.WhenAny(x => x.IsBusy, x => !x.Value && !string.IsNullOrEmpty(Name)),
                     ExecuteLoadTickDataAsync, RxApp.MainThreadScheduler);
 
-            UpdatePlot("3m");
+            UpdatePlot(_lastLoadedDuration);
         }
 
         private async Task<bool> ExecuteLoadTickDataAsync(object parameter)
@@ -107,15 +109,13 @@ namespace kokos.WPF.ViewModel
             IsBusy = true;
             StatusText = "Loading...";
 
-            _lastLoadedDuration = (parameter as string) ?? _lastLoadedDuration;
+            if (parameter != null)
+            {
+                _lastLoadedDuration = (DurationEnum) Enum.Parse(typeof (DurationEnum), parameter.ToString());
+            }
 
-            DataPeriod periodCode;
-            DateTime startDate, endDate;
-
-            GetTickDataInfo(ref _lastLoadedDuration, out startDate, out endDate, out periodCode);
-            Duration = _lastLoadedDuration;
-
-            var ticks = await _xtbWrapper.LoadData(Name, periodCode, startDate, endDate);
+            Duration = _lastLoadedDuration.ToString();
+            var ticks = await _xtbWrapper.LoadData(Name, _lastLoadedDuration);
 
             Ticks.Clear();
             foreach (var tick in ticks)
@@ -130,42 +130,8 @@ namespace kokos.WPF.ViewModel
             return true;
         }
 
-        private static void GetTickDataInfo(ref string duration, out DateTime startDate, out DateTime endDate,
-            out DataPeriod periodCode)
-        {
-            if (string.IsNullOrEmpty(duration))
-                duration = "3m";
 
-            periodCode = DataPeriod.D1;
-
-            if (duration == "1d")
-                periodCode = DataPeriod.M5;
-            else if (duration == "1w")
-                periodCode = DataPeriod.H1;
-            //else if (duration == "5y")
-            //    periodCode = PERIOD_CODE.PERIOD_W1;
-
-            endDate = DateTime.Now;
-
-            if (duration == "5y")
-                startDate = endDate.AddYears(-5);
-            else if (duration == "12m")
-                startDate = endDate.AddMonths(-12);
-            else if (duration == "6m")
-                startDate = endDate.AddMonths(-6);
-            else if (duration == "3m")
-                startDate = endDate.AddMonths(-3);
-            else if (duration == "1m")
-                startDate = endDate.AddMonths(-1);
-            else if (duration == "1w")
-                startDate = endDate.AddDays(-7);
-            else
-                startDate = endDate.AddDays(-3);
-
-            startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day);
-        }
-
-        private void UpdatePlot(string duration)
+        private void UpdatePlot(DurationEnum duration)
         {
             Plots.Clear();
 

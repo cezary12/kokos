@@ -120,7 +120,6 @@
     <Compile Include="Converters\NegateBooleanConverter.cs" />
     <Compile Include="Extensions\DateValueExtensions.cs" />
     <Compile Include="ViewModel\Base\AReactiveViewModel.cs" />
-    <Compile Include="ViewModel\LoginViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\PlotViewModel.cs" />
     <Compile Include="ViewModel\SymbolViewModel.cs" />

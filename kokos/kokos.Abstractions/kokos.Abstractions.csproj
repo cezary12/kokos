@@ -39,7 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataPeriod.cs" />
+    <Compile Include="DurationEnum.cs" />
     <Compile Include="DateRangeValue.cs" />
     <Compile Include="DateValue.cs" />
     <Compile Include="DecisionType.cs" />

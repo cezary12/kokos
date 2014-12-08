@@ -1,5 +1,6 @@
 ﻿using kokos.Abstractions;
 using kokos.Communication.Extensions;
+using kokos.Communication.Store;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,13 @@ namespace kokos.Communication.ServerConnect
         private SecureString _password;
         private bool _isDemo;
 
+        private readonly SymbolDb _symbolDb;
+
+        public XtbWrapper(SymbolDb symbolDb)
+        {
+            _symbolDb = symbolDb;
+        }
+
         public async Task<bool> Login(string userId, SecureString password, bool isDemo)
         {
             _userId = userId;
@@ -39,6 +47,16 @@ namespace kokos.Communication.ServerConnect
 
             var loginResponse = await ConnectToServer();
             ThrowIfNotSuccessful(loginResponse);
+
+            if (_symbolDb.Symbols.Count > 0)
+            {
+                SymbolRecords = _symbolDb
+                    .Symbols
+                    .Select(x => x.Symbol)
+                    .ToList();
+
+                return true;
+            }
 
             var allSymbolsResponse = await _connector.GetAllSymbols();
             ThrowIfNotSuccessful(allSymbolsResponse);
@@ -52,10 +70,50 @@ namespace kokos.Communication.ServerConnect
                 Bid = x.Bid
             }).ToList();
 
+            foreach (var s in SymbolRecords)
+            {
+                try
+                {
+                    var daily = await LoadData(s.Name, DurationEnum.Year10);
+                    var intraday = await LoadData(s.Name, DurationEnum.Day1);
+
+                    var ss = new SymbolStore
+                    {
+                        Symbol = s,
+                        DailyTickData = daily,
+                        IntradayTickData = intraday
+                    };
+
+                    _symbolDb.Symbols.Add(ss);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error while loading " + s.Name);
+                }
+
+            }
+
             return true;
 
             //var symbolResponse = APICommandFactory.ExecuteSymbolCommand(_connector, "EURUSD", true);
             //ThrowIfNotSuccessful(symbolResponse);
+        }
+
+        public async Task<List<Symbol>> LoadSymbols()
+        {
+            var allSymbolsResponse = await _connector.GetAllSymbols();
+            ThrowIfNotSuccessful(allSymbolsResponse);
+
+            var symbolRecords = allSymbolsResponse.SymbolRecords.Select(x => new Symbol
+            {
+                Name = x.Symbol,
+                CategoryName = x.CategoryName,
+                Description = x.Description,
+                Ask = x.Ask,
+                Bid = x.Bid
+            }).ToList();
+
+            return symbolRecords;
         }
 
         private async Task<LoginResponse> ConnectToServer()
@@ -77,8 +135,11 @@ namespace kokos.Communication.ServerConnect
             return true;
         }
 
-        public async Task<List<TickData>> LoadData(string symbol, DataPeriod dataPeriod, DateTime startDate, DateTime endDate)
+        public async Task<List<TickData>> LoadData(string symbol, DurationEnum dataPeriod)
         {
+            DateTime startDate, endDate;
+            GetPeriodData(dataPeriod, out startDate, out endDate);
+
             var start = startDate.ToUnixMilliseconds();
             var end = endDate.ToUnixMilliseconds();
             var periodCode = MapToPeriodCode(dataPeriod);
@@ -91,16 +152,11 @@ namespace kokos.Communication.ServerConnect
             return tickData;
         }
 
-        private static PeriodCode MapToPeriodCode(DataPeriod dataPeriod)
+        private static PeriodCode MapToPeriodCode(DurationEnum dataPeriod)
         {
-            switch (dataPeriod)
-            {
-                case DataPeriod.D1: return PeriodCode.Days(1);
-                case DataPeriod.M5: return PeriodCode.Minutes(5);
-                case DataPeriod.H1: return PeriodCode.Hours(1);
-                default: 
-                    throw new NotSupportedException("Not supported period type: " + dataPeriod);
-            }
+            return dataPeriod == DurationEnum.Day1 
+                ? PeriodCode.Minutes(5) 
+                : PeriodCode.Days(1);
         }
 
         private async Task<T> TryExecute<T>(Func<Task<T>> execute, [CallerMemberName] string callerMemberName = null)
@@ -124,6 +180,23 @@ namespace kokos.Communication.ServerConnect
             } while (++retry <= 3);
 
             throw new Exception("Unable to execute function " + callerMemberName, lastException);
+        }
+
+        private static void GetPeriodData(DurationEnum periodCode, out DateTime startDate, out DateTime endDate)
+        {
+            endDate = DateTime.Now;
+            startDate = endDate.Date.AddYears(-1);
+            switch (periodCode)
+            {
+                    case DurationEnum.Day1:
+                    startDate = endDate.Date;
+                    break;
+                    case DurationEnum.Week1:
+                    startDate = endDate.Date.AddDays(-7);
+
+                    break;
+            }
+
         }
 
         private static void ThrowIfNotSuccessful(APIResponse response, [CallerMemberName] string callerMemberName = null)

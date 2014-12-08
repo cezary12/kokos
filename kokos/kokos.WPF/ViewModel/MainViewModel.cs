@@ -1,4 +1,7 @@
-﻿using kokos.Communication.ServerConnect;
+﻿using System.Security;
+using kokos.Communication.Extensions;
+using kokos.Communication.ServerConnect;
+using kokos.WPF.Properties;
 using kokos.WPF.ViewModel.Base;
 using ReactiveUI;
 using System;
@@ -16,7 +19,43 @@ namespace kokos.WPF.ViewModel
     {
         private readonly XtbWrapper _xtbWrapper;
 
-        public LoginViewModel LoginViewModel { get; private set; }
+        public string Login
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
+        public SecureString Password
+        {
+            get { return GetValue<SecureString>(); }
+            set { SetValue(value); }
+        }
+
+        public bool RememberLoginData
+        {
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
+        }
+
+        public bool IsDemoAccount
+        {
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
+        }
+
+        public bool IsBusy
+        {
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
+        }
+
+        public bool IsLoggedIn
+        {
+            get { return GetValue<bool>(); }
+            set { SetValue(value); }
+        }
+
+        public IReactiveCommand LoginCommand { get; private set; }
+        public IReactiveCommand LogoutCommand { get; private set; }
 
         private List<SymbolViewModel> _symbols;
         public ObservableCollection<SymbolViewModel> Symbols { get; private set; }
@@ -35,16 +74,13 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
-        public MainViewModel(LoginViewModel loginViewModel, XtbWrapper xtbWrapper)
+        public MainViewModel(XtbWrapper xtbWrapper)
         {
             RxApp.MainThreadScheduler = new DispatcherScheduler(Application.Current.Dispatcher);
 
-            LoginViewModel = loginViewModel;
             _xtbWrapper = xtbWrapper;
 
             Symbols = new ObservableCollection<SymbolViewModel>();
-
-            LoginViewModel.ObservableForProperty(x => x.IsLoggedIn).Subscribe(x => PopulateSymbols());
 
             SearchSymbolCommand = ReactiveCommand.CreateAsyncTask(ExecuteSearchSymbol, RxApp.MainThreadScheduler);
 
@@ -55,6 +91,19 @@ namespace kokos.WPF.ViewModel
             this.ObservableForProperty(x => x.SearchText)
                 .Throttle(TimeSpan.FromSeconds(0.2), RxApp.MainThreadScheduler)
                 .Subscribe(SearchSymbolCommand.Execute);
+
+            if (IsInDesignMode)
+            {
+                IsLoggedIn = true;
+            }
+
+            LoginCommand = ReactiveCommand.CreateAsyncTask(CreateCanExecutePasswordObservable(), ExecuteLoginAsync, RxApp.MainThreadScheduler);
+            LogoutCommand = ReactiveCommand.CreateAsyncTask(ExecuteLogoutAsync, RxApp.MainThreadScheduler);
+
+            RememberLoginData = Settings.Default.RememberLoginData;
+            Login = Settings.Default.Login;
+            Password = Settings.Default.Password.Decrypt().ToSecureString();
+            IsDemoAccount = Settings.Default.IsDemoAccount;
         }
 
         private void ExecuteLoadTickData(object parameter)
@@ -92,23 +141,6 @@ namespace kokos.WPF.ViewModel
             return text.IndexOf(SearchText, StringComparison.CurrentCultureIgnoreCase) >= 0;
         }
 
-        private void PopulateSymbols()
-        {
-            _symbols = _xtbWrapper.SymbolRecords
-                .Select(symbol => new SymbolViewModel(_xtbWrapper)
-                {
-                    Name = symbol.Name,
-                    CategoryName = symbol.CategoryName,
-                    Description = symbol.Description,
-
-                    Bid = symbol.Bid,
-                    Ask = symbol.Ask
-                })
-                .ToList();
-
-            AddSymbolsToCollection(_symbols);
-        }
-
         private void AddSymbolsToCollection(IEnumerable<SymbolViewModel> symbols)
         {
             Symbols.Clear();
@@ -116,6 +148,66 @@ namespace kokos.WPF.ViewModel
                 Symbols.Add(symbol);
 
             SelectedSymbol = Symbols.FirstOrDefault();
+        }
+
+        private IObservable<bool> CreateCanExecutePasswordObservable()
+        {
+            return this.WhenAny(x => x.Login, x => x.Password, CanExecuteLoginCommand);
+        }
+
+        private static bool CanExecuteLoginCommand(IObservedChange<MainViewModel, string> login, IObservedChange<MainViewModel, SecureString> password)
+        {
+            return !string.IsNullOrEmpty(login.Value) && !string.IsNullOrEmpty(password.Value.ToInsecureString());
+        }
+
+        private async Task<bool> ExecuteLoginAsync(object parameter)
+        {
+            IsBusy = true;
+
+            try
+            {
+                await _xtbWrapper.Login(Login, Password, IsDemoAccount);
+
+                Settings.Default.RememberLoginData = RememberLoginData;
+                Settings.Default.Login = RememberLoginData ? Login : "";
+                Settings.Default.Password = RememberLoginData ? Password.ToInsecureString().Encrypt() : "";
+                Settings.Default.IsDemoAccount = RememberLoginData && IsDemoAccount;
+
+                Settings.Default.Save();
+
+                _symbols = (await _xtbWrapper.LoadSymbols())
+                    .Select(symbol => new SymbolViewModel(_xtbWrapper, symbol.Name, symbol.Description)
+                    {
+                        CategoryName = symbol.CategoryName,
+
+                        Bid = symbol.Bid,
+                        Ask = symbol.Ask
+                    })
+                    .ToList();
+
+                AddSymbolsToCollection(_symbols);
+
+                IsBusy = false;
+                IsLoggedIn = true;
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            return true;
+        }
+
+        private async Task<bool> ExecuteLogoutAsync(object parameter)
+        {
+            IsLoggedIn = false;
+            IsBusy = true;
+
+            await _xtbWrapper.Logout();
+
+            IsBusy = false;
+
+            return true;
         }
     }
 }

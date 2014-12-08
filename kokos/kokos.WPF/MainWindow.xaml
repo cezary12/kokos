@@ -52,31 +52,31 @@
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.RightWindowCommands>
         <controls:WindowCommands>
-            <Button Content="Logout" Command="{Binding LoginViewModel.LogoutCommand, Mode=OneWay}" Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Button Content="Logout" Command="{Binding LogoutCommand, Mode=OneWay}" Visibility="{Binding IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </controls:WindowCommands>
     </controls:MetroWindow.RightWindowCommands>
     <Grid>
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Not}">
+        <Grid VerticalAlignment="Center" HorizontalAlignment="Stretch" Visibility="{Binding IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Not}">
             <Grid.InputBindings>
-                <KeyBinding Command="{Binding LoginViewModel.LoginCommand}" Key="Enter"/>
+                <KeyBinding Command="{Binding LoginCommand}" Key="Enter"/>
             </Grid.InputBindings>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Width="200" IsEnabled="{Binding LoginViewModel.IsBusy, Converter={StaticResource NegateBooleanConverter}}"
+            <StackPanel Grid.Row="0" Width="200" IsEnabled="{Binding IsBusy, Converter={StaticResource NegateBooleanConverter}}"
                         FocusManager.FocusedElement="{Binding ElementName=LoginBox}">
-                <TextBox Margin="0,5" controls:TextboxHelper.Watermark="Login" Text="{Binding LoginViewModel.Login, UpdateSourceTrigger=PropertyChanged}" Name="LoginBox" />
+                <TextBox Margin="0,5" controls:TextboxHelper.Watermark="Login" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" Name="LoginBox" />
                 <PasswordBox Margin="0,5" controls:TextboxHelper.Watermark="Password" Name="PasswordBox"
                              attachedProperties:PasswordBoxAssistant.BindPassword="true"
-                             attachedProperties:PasswordBoxAssistant.BoundPassword="{Binding Path=LoginViewModel.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <CheckBox Margin="0,5" Content="demo account" IsChecked="{Binding LoginViewModel.IsDemoAccount}" />
-                <CheckBox Margin="0,5" Content="remember me" IsChecked="{Binding LoginViewModel.RememberLoginData}" />
-                <Button Margin="0,15" Style="{DynamicResource AccentedSquareButtonStyle}" Content="Login" Command="{Binding LoginViewModel.LoginCommand, Mode=OneWay}"/>
+                             attachedProperties:PasswordBoxAssistant.BoundPassword="{Binding Path=Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <CheckBox Margin="0,5" Content="demo account" IsChecked="{Binding IsDemoAccount}" />
+                <CheckBox Margin="0,5" Content="remember me" IsChecked="{Binding RememberLoginData}" />
+                <Button Margin="0,15" Style="{DynamicResource AccentedSquareButtonStyle}" Content="Login" Command="{Binding LoginCommand, Mode=OneWay}"/>
             </StackPanel>
-            <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding LoginViewModel.IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <controls:MetroProgressBar Grid.Row="1" IsIndeterminate="True" HorizontalAlignment="Stretch" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </Grid>
-        <DockPanel Visibility="{Binding LoginViewModel.IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <DockPanel Visibility="{Binding IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid DockPanel.Dock="Bottom" Background="{DynamicResource AccentColorBrush}">
                 <Grid Margin="5">
                     <Grid.ColumnDefinitions>
@@ -137,66 +137,66 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Horizontal" Margin="0,5">
-                                    <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1d" >
+                                    <Button Content="1d" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Day1" >
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1d">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Day1">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1w">
+                                    <Button Content="1w" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Wee1">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1w">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Week1">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="1m">
+                                    <Button Content="1m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Month1">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="1m">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Month1">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="3m">
+                                    <Button Content="3m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Month3">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="3m">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Month3">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="12m">
+                                    <Button Content="12m" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Year1">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="12m">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Year1">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
                                         </Button.Style>
                                     </Button>
-                                    <Button Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="5y">
+                                    <Button Content="5y" Margin="5,0" Command="{Binding SelectedSymbol.LoadTickData}" CommandParameter="Year5">
                                         <Button.Style>
                                             <Style BasedOn="{StaticResource LinkButton}" TargetType="Button">
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="5y">
+                                                    <DataTrigger Binding="{Binding SelectedSymbol.Duration}" Value="Year5">
                                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                                     </DataTrigger>
                                                 </Style.Triggers>

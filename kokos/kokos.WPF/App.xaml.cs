@@ -5,6 +5,7 @@ using System.Windows.Threading;
 using Autofac;
 using Autofac.Core;
 using kokos.Communication.ServerConnect;
+using kokos.Communication.Store;
 using kokos.WPF.ViewModel;
 
 namespace kokos.WPF
@@ -29,6 +30,8 @@ namespace kokos.WPF
             builder.RegisterAssemblyTypes(assembly)
                    .AsSelf()
                    .AsImplementedInterfaces();
+
+            builder.RegisterType<SymbolDb>().AsSelf();
             builder.RegisterType<XtbWrapper>().AsSelf().SingleInstance();
 
             var container = builder.Build();
