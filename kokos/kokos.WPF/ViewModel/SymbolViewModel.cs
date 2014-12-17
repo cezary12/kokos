@@ -79,6 +79,18 @@ namespace kokos.WPF.ViewModel
             set { SetValue(value); }
         }
 
+        public PlotModel PreviewPlot
+        {
+            get { return GetValue<PlotModel>(); }
+            set { SetValue(value); }
+        }
+
+        public IPlotController PreviewPlotController
+        {
+            get { return GetValue<IPlotController>(); }
+            set { SetValue(value); }
+        }
+
         public ObservableCollection<PlotViewModel> Plots { get; private set; }
 
         public ObservableCollection<TickData> Ticks { get; private set; }
@@ -130,6 +142,37 @@ namespace kokos.WPF.ViewModel
             return true;
         }
 
+        public async Task<bool> UpdatePreviewPlot()
+        {
+            try
+            {
+                var ticks = await _xtbWrapper.LoadData(Name, DurationEnum.Year1);
+
+                var dateValues = ticks.ToDateValuePoints(x => x.Close).ToList();
+                var plot = CreatePlot(null, CreateLineSeries("Close Price", OxyColors.Gray, dateValues));
+
+                foreach (var ax in plot.Axes)
+                {
+                    ax.IsAxisVisible = false;
+                    ax.IsPanEnabled = false;
+                    ax.IsZoomEnabled = false;
+                }
+
+                plot.IsLegendVisible = false;
+                plot.PlotMargins = new OxyThickness(0);
+                plot.PlotAreaBackground = OxyColors.Transparent;
+                plot.PlotAreaBorderThickness = new OxyThickness(0);
+
+                PreviewPlot = plot;
+                PreviewPlotController = new PlotController();
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         private void UpdatePlot(DurationEnum duration)
         {

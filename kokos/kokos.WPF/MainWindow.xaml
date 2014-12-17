@@ -106,19 +106,23 @@
                          Style="{DynamicResource SearchMetroTextBox}"
                          Margin="0,5"/>
                     <ListBox Grid.Row="1" ItemsSource="{Binding Symbols}" SelectedItem="{Binding SelectedSymbol, Delay=100}"
-                         VirtualizingStackPanel.IsVirtualizing="False" ScrollViewer.CanContentScroll="False">
+                         VirtualizingStackPanel.IsVirtualizing="False" ScrollViewer.CanContentScroll="False" HorizontalContentAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel Margin="0,5">
-                                    <TextBlock Text="{Binding CategoryName}" FontSize="10" />
-                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" />
-                                    <TextBlock Text="{Binding Description}" FontSize="10"/>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
-                                        <TextBlock Text=" - " FontSize="8"/>
-                                        <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                                <Grid>
+                                    <oxy:Plot Height="50" HorizontalContentAlignment="Stretch" Model="{Binding PreviewPlot}" Controller="{Binding PreviewPlotController}" DefaultTrackerTemplate="{x:Null}" 
+                                              Background="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Background}" />
+                                    <StackPanel Margin="0,5">
+                                        <TextBlock Text="{Binding CategoryName}" FontSize="10" />
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                                        <TextBlock Text="{Binding Description}" FontSize="10"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Bid, StringFormat=N4}" FontSize="8"/>
+                                            <TextBlock Text=" - " FontSize="8"/>
+                                            <TextBlock Text="{Binding Ask, StringFormat=N4}" FontSize="8"/>
+                                        </StackPanel>
                                     </StackPanel>
-                                </StackPanel>
+                                </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

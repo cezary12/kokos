@@ -187,6 +187,12 @@ namespace kokos.WPF.ViewModel
 
                 AddSymbolsToCollection(_symbols);
 
+                foreach (var s in _symbols)
+                {
+// ReSharper disable once CSharpWarnings::CS4014
+                    s.UpdatePreviewPlot();
+                }
+
                 IsBusy = false;
                 IsLoggedIn = true;
             }
